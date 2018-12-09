@@ -1,7 +1,7 @@
 public class Board {
 
     private char[][] spaces = new char[8][8];
-    // Array of characters for pieces on board
+    private boolean currentTurn;
 
     public Board() {
         // Pawns
@@ -30,6 +30,8 @@ public class Board {
         // 7) R N B Q K B N R
         //
         // Where spaces[1][4] == 'p'
+
+        currentTurn = true;
     }
 
     public boolean move(int[] start, int[] dest) {
@@ -41,11 +43,20 @@ public class Board {
         // Make the update
         spaces[dest[0]][dest[1]] = spaces[start[0]][start[1]];
         spaces[start[0]][start[1]] = null;
+
+        currentTurn = !currentTurn;
+
         return true;
     }
 
     public boolean isValid(int[] start, int[] dest) {
+        if (currentTurn != Character.isUpperCase(spaces[start[0]][start[1]])) {
+            return false;
+        }
+
         // TODO: implement a checker to ensure valid move
+
+        return true;
     }
 
 }
