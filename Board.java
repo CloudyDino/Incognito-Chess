@@ -55,8 +55,25 @@ public class Board {
         }
 
         // TODO: implement a checker to ensure valid move
+        switch(Character.toLowerCase(spaces[start[0]][start[1]]))) {
+            case 'r':
+                if ((dest[0] == start[0]) ^ (dest[1] == start[1])) {
+                    return true;
+                }
+                break;
 
-        return true;
+            case 'n':
+                // Do this
+                break;
+
+            case 'b':
+                if (Math.abs(start[0] - dest[0]) == Math.abs(start[1] - dest[1])) {
+                    return true;
+                }
+                break;
+        }
+
+        return false;
     }
 
 }
