@@ -1,3 +1,5 @@
+import com.sun.swing.internal.plaf.basic.resources.basic;
+
 public class Board {
 
     private char[][] spaces = new char[8][8];
@@ -50,27 +52,74 @@ public class Board {
     }
 
     public boolean isValid(int[] start, int[] dest) {
+        if (spaces[start[0]][start[1]] == 0) {
+            return false;
+        }
+
         if (currentTurn != Character.isUpperCase(spaces[start[0]][start[1]])) {
             return false;
         }
 
+        if (spaces[dest[0]][dest[1]] != 0) {
+            if (currentTurn == Character.isUpperCase(spaces[dest[0]][dest[1]])) {
+                return false;
+            }
+        }
+
         // TODO: implement a checker to ensure valid move
-        switch(Character.toLowerCase(spaces[start[0]][start[1]]))) {
+        switch(Character.toLowerCase(spaces[start[0]][start[1]])) {
             case 'r':
-                if ((dest[0] == start[0]) ^ (dest[1] == start[1])) {
-                    return true;
-                }
-                break;
+                return ((dest[0] == start[0]) ^ (dest[1] == start[1]));
 
             case 'n':
                 // Do this
-                break;
+                boolean check = false;
+                int[] signs = {-1, 1};
+                for (int i = 0; i < 2; i++) {
+                    for (int j = 0; j < 2; j++) {
+                        if (dest[0] == (start[0] + (signs[i] * 2)) && dest[1] == (start[1] + (signs[j] * 3))) {
+                            check = true;
+                        }
+                        if (dest[0] == (start[0] + (signs[i] * 3)) && dest[1] == (start[1] + (signs[j] * 2))) {
+                            check = true;
+                        }
+                    }
+                }
+                return check;
 
             case 'b':
-                if (Math.abs(start[0] - dest[0]) == Math.abs(start[1] - dest[1])) {
-                    return true;
+                return (Math.abs(start[0] - dest[0]) == Math.abs(start[1] - dest[1]));
+
+            case 'q':
+                return ((dest[0] == start[0]) ^ (dest[1] == start[1])) || (Math.abs(start[0] - dest[0]) == Math.abs(start[1] - dest[1]));
+
+            case 'k':
+                return (Math.abs(dest[0] - start[0]) <= 1) || (Math.abs(dest[1] - start[1]) <= 1);
+
+            case 'p':
+                boolean check2 = false;
+                if (currentTurn) {
+                    if (start[0] - dest[0] == 1 && start[1] == dest[1]) {
+                        if (spaces[dest[0]][dest[1]] == 0) {
+                            check2 = true;
+                        }
+                    } else if (start[0] - dest[0] == 1 && Math.abs(start[1] - dest[1]) == 1) {
+                        if (spaces[dest[0]][dest[1]] != 0) {
+                            check2 = true;
+                        }
+                    }
+                } else {
+                    if (dest[0] - start[0] == 1 && start[1] == dest[1]) {
+                        if (spaces[dest[0]][dest[1]] == 0) {
+                            check2 = true;
+                        }
+                    } else if (dest[0] - start[0] == 1 && Math.abs(start[1] - dest[1]) == 1) {
+                        if (spaces[dest[0]][dest[1]] != 0) {
+                            check2 = true;
+                        }
+                    }
                 }
-                break;
+                return check2;
         }
 
         return false;
