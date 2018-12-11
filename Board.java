@@ -1,5 +1,3 @@
-import com.sun.swing.internal.plaf.basic.resources.basic;
-
 public class Board {
 
     private char[][] spaces = new char[8][8];
@@ -44,7 +42,7 @@ public class Board {
 
         // Make the update
         spaces[dest[0]][dest[1]] = spaces[start[0]][start[1]];
-        spaces[start[0]][start[1]] = null;
+        spaces[start[0]][start[1]] = 0;
 
         currentTurn = !currentTurn;
 
@@ -66,21 +64,21 @@ public class Board {
             }
         }
 
-        // TODO: implement a checker to ensure valid move
         switch(Character.toLowerCase(spaces[start[0]][start[1]])) {
             case 'r':
+                // ROOK
                 return ((dest[0] == start[0]) ^ (dest[1] == start[1]));
 
             case 'n':
-                // Do this
+                // KNIGHT
                 boolean check = false;
                 int[] signs = {-1, 1};
                 for (int i = 0; i < 2; i++) {
                     for (int j = 0; j < 2; j++) {
-                        if (dest[0] == (start[0] + (signs[i] * 2)) && dest[1] == (start[1] + (signs[j] * 3))) {
+                        if (dest[0] == (start[0] + (signs[i] * 1)) && dest[1] == (start[1] + (signs[j] * 2))) {
                             check = true;
                         }
-                        if (dest[0] == (start[0] + (signs[i] * 3)) && dest[1] == (start[1] + (signs[j] * 2))) {
+                        if (dest[0] == (start[0] + (signs[i] * 2)) && dest[1] == (start[1] + (signs[j] * 1))) {
                             check = true;
                         }
                     }
@@ -88,20 +86,30 @@ public class Board {
                 return check;
 
             case 'b':
+                // BISHOP
                 return (Math.abs(start[0] - dest[0]) == Math.abs(start[1] - dest[1]));
 
             case 'q':
+                // QUEEN
                 return ((dest[0] == start[0]) ^ (dest[1] == start[1])) || (Math.abs(start[0] - dest[0]) == Math.abs(start[1] - dest[1]));
 
             case 'k':
+                // KING
                 return (Math.abs(dest[0] - start[0]) <= 1) || (Math.abs(dest[1] - start[1]) <= 1);
 
             case 'p':
+                // PAWN
                 boolean check2 = false;
                 if (currentTurn) {
                     if (start[0] - dest[0] == 1 && start[1] == dest[1]) {
                         if (spaces[dest[0]][dest[1]] == 0) {
                             check2 = true;
+                        }
+                    } else if (start[0] - dest[0] == 2 && start[1] == dest[1]) {
+                        if (spaces[dest[0]][dest[1]] == 0) {
+                            if (start[0] == 6) {
+                                check2 = true;
+                            }
                         }
                     } else if (start[0] - dest[0] == 1 && Math.abs(start[1] - dest[1]) == 1) {
                         if (spaces[dest[0]][dest[1]] != 0) {
@@ -113,6 +121,12 @@ public class Board {
                         if (spaces[dest[0]][dest[1]] == 0) {
                             check2 = true;
                         }
+                    }  else if (dest[0] - start[0] == 2 && start[1] == dest[1]) {
+                        if (spaces[dest[0]][dest[1]] == 0) {
+                            if (start[0] == 1) {
+                                check2 = true;
+                            }
+                        }
                     } else if (dest[0] - start[0] == 1 && Math.abs(start[1] - dest[1]) == 1) {
                         if (spaces[dest[0]][dest[1]] != 0) {
                             check2 = true;
@@ -123,6 +137,14 @@ public class Board {
         }
 
         return false;
+    }
+
+    public char[][] getBoard() {
+        return spaces;
+    }
+
+    public boolean getTurn() {
+        return currentTurn;
     }
 
 }
