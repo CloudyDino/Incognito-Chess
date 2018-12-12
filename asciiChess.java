@@ -1,33 +1,25 @@
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.util.Scanner;
 
 public class asciiChess {
 
     public static void main(String[] args) {
         Board board = new Board();
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        Scanner in = new Scanner(System.in);
 
         while (true) {
 
             System.out.println();
             printBoard(board);
 
-            try {
-                String x = br.readLine();
-                String y = br.readLine();
-                int[] start = {Integer.parseInt(x), Integer.parseInt(y)};
+            int x1 = in.nextInt();
+            int y1 = in.nextInt();
 
-                String x2 = br.readLine();
-                String y2 = br.readLine();
-                int[] dest = {Integer.parseInt(x2), Integer.parseInt(y2)};
+            int x2 = in.nextInt();
+            int y2 = in.nextInt();
 
-                if (!board.move(start, dest)) {
-                    System.out.println("Invalid move");
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-                break;
+            if (!board.move(x1, y1, x2, y2)) {
+                System.out.println("Invalid move");
             }
         }
     }
@@ -37,9 +29,9 @@ public class asciiChess {
 
         System.out.println("Turn: " + (board.getTurn()? "White":"Black"));
 
-        for (int i = 0; i < arr.length; i++) {
-            for (int j = 0; j < arr[i].length; j++) {
-                System.out.print(arr[i][j] + " ");
+        for (int y = arr[0].length-1; y >= 0; y--) {
+            for (int x = 0; x < arr.length; x++) {
+                System.out.print(arr[x][y] + " ");
             }
             System.out.println();
         }
