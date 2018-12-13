@@ -114,7 +114,11 @@ class UIMain extends JFrame {
                 square.setIcon(icon);
 
                 square.addActionListener(new ClickListener());
-                square.setActionCommand(j + " " + i);
+                if (startColor) {
+                    square.setActionCommand(j + " " + i);
+                } else {
+                    square.setActionCommand((7-j) + " " + (7-i));
+                }
                 square.setFocusPainted(false);
                 square.setRolloverEnabled(true);
                 square.setBorderPainted(false);
@@ -185,7 +189,12 @@ class UIMain extends JFrame {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
 
-                char c = b.getBoard()[i][j];
+                char c;
+                if (startColor) {
+                    c = b.getBoard()[i][j];
+                } else {
+                    c = b.getBoard()[7-i][7-j];
+                }
                 String s = "" + Character.toLowerCase(c);
                 if (Character.isUpperCase(c)) {
                     s = s + "2";
@@ -194,7 +203,11 @@ class UIMain extends JFrame {
                 Image piece = icon.getImage();
                 Image newimg = piece.getScaledInstance(100, 100,  java.awt.Image.SCALE_SMOOTH);
                 icon = new ImageIcon(newimg);
-                buttonArr[i][j].setIcon(icon);
+                if (startColor) {
+                    buttonArr[i][j].setIcon(icon);
+                } else {
+                    buttonArr[7-i][7-j].setIcon(icon);
+                }
 
             }
         }
