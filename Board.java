@@ -119,8 +119,25 @@ public class Board {
     }
 
     private Set<Integer> getPossiblePawnMoves(int x, int y) {
-        return null;
-        // TODO: Pawn Moves
+        // TODO: Real Pawn Moves
+
+        Set<Integer> possibleMoves = new HashSet<>();
+        int dy = (whiteTurn ? 1 : -1);
+        int startY = (whiteTurn ? 1 : 6);
+        if (onBoard(x, y + dy) && spaces[x][y + dy] == 0) {
+            possibleMoves.add(squareToInteger(x, y + dy));
+        }
+        if (possibleMoves.size() > 0 && y == startY && spaces[x][y + 2*dy] == 0) {
+            possibleMoves.add(squareToInteger(x, y + 2*dy));
+        }
+
+        for (int dx = -1; dx <= 1; dx += 2) {
+            if (onBoard(x + dx, y + dy) && spaces[x][y + dy] != 0
+                    && whiteTurn != Character.isUpperCase(spaces[x][y + dy])) {
+                possibleMoves.add(squareToInteger(x, y + dy));
+            }
+        }
+        return possibleMoves;
     }
     
     private Set<Integer> getPossibleKnightMoves(int x, int y) {
