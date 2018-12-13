@@ -37,8 +37,8 @@ class UIMain extends JFrame {
     // Constructor:
     public UIMain() {
         setTitle("Incognito Chess");
-        setSize(800, 800);
-        setLocation(200, 200);
+        setSize(960, 960);
+        setLocation(200, 50);
 
         // Window Listeners
         addWindowListener(new WindowAdapter() {
@@ -87,6 +87,7 @@ class UIMain extends JFrame {
         System.out.println("You are: " + (startColor ? "White":"Black"));
 
         JFrame f = new UIMain();
+        f.setResizable(false);
 
         Container contentPane = f.getContentPane();
         JPanel chessPanel = new JPanel(new GridLayout(8, 8));
@@ -109,7 +110,7 @@ class UIMain extends JFrame {
                 }
                 ImageIcon icon = new ImageIcon("pieces/" + s + ".png");
                 Image piece = icon.getImage();
-                Image newimg = piece.getScaledInstance(100, 100,  java.awt.Image.SCALE_SMOOTH);
+                Image newimg = piece.getScaledInstance(120, 120,  java.awt.Image.SCALE_SMOOTH);
                 icon = new ImageIcon(newimg);
                 square.setIcon(icon);
 
