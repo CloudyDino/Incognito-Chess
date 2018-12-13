@@ -97,7 +97,12 @@ class UIMain extends JFrame {
             for (int j = 0; j < 8; j++) {
                 //Icon warnIcon = new ImageIcon("pawn.png");
                 JButton square = new JButton();
-                char c = b.getBoard()[j][i];
+                char c;
+                if (startColor) {
+                    c = b.getBoard()[j][i];
+                } else {
+                    c = b.getBoard()[7-j][7-i];
+                }
                 String s = "" + Character.toLowerCase(c);
                 if (Character.isUpperCase(c)) {
                     s = s + "2";
@@ -114,19 +119,23 @@ class UIMain extends JFrame {
                 square.setRolloverEnabled(true);
                 square.setBorderPainted(false);
 
-                buttonArr[j][i] = square;
+                if (startColor) {
+                    buttonArr[j][i] = square;
+                } else {
+                    buttonArr[7-j][7-i] = square;
+                }
 
                 if (i % 2 == 0) {
                     if (j % 2 == 0) {
-                        square.setBackground(Color.WHITE);
-                    } else {
                         square.setBackground(Color.GRAY);
+                    } else {
+                        square.setBackground(Color.WHITE);
                     }
                 } else {
                     if (j % 2 == 0) {
-                        square.setBackground(Color.GRAY);
-                    } else {
                         square.setBackground(Color.WHITE);
+                    } else {
+                        square.setBackground(Color.GRAY);
                     }
                 }
                 chessPanel.add(square);
