@@ -43,6 +43,8 @@ class UIMain extends JFrame {
         // Window Listeners
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
+                client.disconnect();
+                server.disconnect();
                 System.exit(0);
             }
         });
@@ -76,7 +78,6 @@ class UIMain extends JFrame {
             startColor = true;
         } else {
             startColor = false;
-            b.setTurn(false);
         }
 
         return true;

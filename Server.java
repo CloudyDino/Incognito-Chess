@@ -69,14 +69,21 @@ public class Server implements Runnable
                 System.out.println("end move\n");
 
                 UIMain.recieveMove(move);
-			}
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void disconnect() {
+        try {
 			System.out.println("Closing connection");
 
 			// close connection
 			socket.close();
 			in.close();
 		}
-		catch(IOException i)
+		catch (IOException i)
 		{
 			i.printStackTrace();
 		}

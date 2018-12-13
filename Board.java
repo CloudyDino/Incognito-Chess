@@ -141,7 +141,7 @@ public class Board {
         }
         return possibleMoves;
     }
-    
+
     private Set<Integer> getPossibleKnightMoves(int x, int y) {
         Set<Integer> possibleMoves = new HashSet<>();
         for (int dx = -2; dx <= 2; dx++) {
@@ -213,7 +213,7 @@ public class Board {
                 if ((dx != 0 || dy != 0) &&
                         onBoard(currX, currY) &&
                         whiteTurn != Character.isUpperCase(spaces[currX][currY])) {
-                    possibleMoves.add(squareToInteger(currX, currY));                    
+                    possibleMoves.add(squareToInteger(currX, currY));
                 }
             }
         }
