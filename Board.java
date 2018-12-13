@@ -3,8 +3,11 @@ import java.util.Set;
 
 public class Board {
 
-    private char[][] spaces = new char[8][8];
+    public final int SIZE = 8;
+
+    private char[][] spaces = new char[SIZE][SIZE];
     private boolean whiteTurn;
+    private boolean castleWK, castleWQ, castleBK, castleBQ;
 
     public Board() {
 
@@ -31,6 +34,10 @@ public class Board {
         // Where spaces[4][0] == 'K'
 
         whiteTurn = true;
+        castleWK = true;
+        castleWQ = true;
+        castleBK = true;
+        castleBQ = true;
     }
 
     public boolean move(int startX, int startY, int destX, int destY) {
@@ -39,9 +46,42 @@ public class Board {
             return false;
         }
 
+        // Change castling if king moves or rook moves from original position
+        if (startY == 0) {
+            if (spaces[startX][startY] == 'K') {
+                castleWK = false;
+                castleWQ = false;
+            } else if (startX == 0) {
+                castleWQ = false;
+            } else if (startX == SIZE) {
+                castleWK = false;
+            }
+        } else if (startY == SIZE) {
+            if (spaces[startX][startY] == 'k') {
+                castleBK = false;
+                castleBQ = false;
+            } else if (startX == 0) {
+                castleBQ = false;
+            } else if (startX == SIZE) {
+                castleBK = false;
+            }
+        }
+
         // Make the update
-        spaces[destX][destY] = spaces[startX][startY];
-        spaces[startX][startY] = 0;
+
+        // TODO: en passant
+        // TODO: promotion
+        if (Character.toLowerCase(spaces[startX][startY]) == 'k' && Math.abs(startX - destX) == 2) {
+            spaces[destX][destY] = spaces[startX][startY];
+            spaces[startX][startY] = 0;
+
+            int rookX = (startX > destX ? 0 : SIZE - 1);
+            spaces[(startX + destX)/2][startY] = spaces[rookX][startY];
+            spaces[rookX][startY] = 0;
+        } else {
+            spaces[destX][destY] = spaces[startX][startY];
+            spaces[startX][startY] = 0;
+        }
 
         whiteTurn = !whiteTurn;
 
@@ -58,6 +98,7 @@ public class Board {
         Set<Integer> possibleMoves = getPossibleMoves(startX, startY);
         if (possibleMoves != null &&
                 possibleMoves.contains(squareToInteger(destX, destY))) {
+            // TODO: Check if this move puts the king of current turn's color into check. Only return true if it doesn't
             return true;
         }
 
@@ -77,27 +118,27 @@ public class Board {
     }
 
     public int squareToInteger(int x, int y) {
-        if (x < spaces.length && y < spaces.length) {
-            return x * spaces.length + y;
+        if (x < SIZE && y < SIZE) {
+            return x * SIZE + y;
         }
         return -1;
     }
 
     public int squareToInteger(int[] xy) {
-        if (xy.length >= 2 && xy[0] < spaces.length && xy[1] < spaces.length) {
-            return xy[0]*spaces.length + xy[1];
+        if (xy.length >= 2 && xy[0] < SIZE && xy[1] < SIZE) {
+            return xy[0]*SIZE + xy[1];
         }
         return -1;
     }
 
     public int[] integerToSquare(int i) {
-        int[] square = {i/spaces.length, i%spaces.length};
+        int[] square = {i/SIZE, i%SIZE};
         return square;
     }
 
     public boolean onBoard(int x, int y) {
-        return 0 <= x && x < spaces.length &&
-               0 <= y && y < spaces.length;
+        return 0 <= x && x < SIZE &&
+               0 <= y && y < SIZE;
     }
 
     private Set<Integer> getPossibleMoves(int x, int y) {
@@ -119,7 +160,7 @@ public class Board {
     }
 
     private Set<Integer> getPossiblePawnMoves(int x, int y) {
-        // TODO: All Pawn Moves: En Passant, Promotion?
+        // TODO: En Passant
 
         Set<Integer> possibleMoves = new HashSet<>();
         int dy = (whiteTurn ? 1 : -1);
@@ -218,6 +259,30 @@ public class Board {
                 }
             }
         }
+        boolean castleK = (whiteTurn ? castleWK : castleBK);
+        boolean castleQ = (whiteTurn ? castleWQ : castleBQ);
+
+        // TODO: make sure that for each of the castling moves, that the king
+        //       doesn't go through check
+        for (int currX = x + 1; castleK && currX < SIZE-1; currX++) {
+            if (spaces[currX][y] != 0) {
+                castleK = false;
+            }
+        }
+
+        for (int currX = y - 1; castleQ && currX > 0; currX--) {
+            if (spaces[currX][y] != 0) {
+                castleQ = false;
+            }
+        }
+
+        if (castleK) {
+            possibleMoves.add(squareToInteger(x+2, y));
+        }
+        if (castleQ) {
+            possibleMoves.add(squareToInteger(x-2, y));
+        }
+
         return possibleMoves;
     }
 
