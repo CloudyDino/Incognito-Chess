@@ -96,8 +96,8 @@ public class Board {
     }
 
     public boolean onBoard(int x, int y) {
-        return 0 <= x && x <= spaces.length &&
-               0 <= y && y <= spaces.length;
+        return 0 <= x && x < spaces.length &&
+               0 <= y && y < spaces.length;
     }
 
     private Set<Integer> getPossibleMoves(int x, int y) {
