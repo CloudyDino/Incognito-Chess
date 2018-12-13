@@ -143,8 +143,21 @@ public class Board {
     }
     
     private Set<Integer> getPossibleKnightMoves(int x, int y) {
-        return null;
-        // TODO: Knight Moves
+        Set<Integer> possibleMoves = new HashSet<>();
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dy = -2; dy <= 2; dy++) {
+                if (dx != dy && dx != 0 && dy != 0 && dx + dy != 0) {
+                    int currX = x + dx;
+                    int currY = y + dy;
+                    if (onBoard(currX, currY) && (spaces[currX][currY] == 0 ||
+                            whiteTurn != Character.isUpperCase(spaces[currX][currY]))) {
+                        possibleMoves.add(squareToInteger(currX, currY));
+                    }
+                }
+
+            }
+}
+        return possibleMoves;
     }
 
     private Set<Integer> getPossibleRookMoves(int x, int y) {
@@ -178,7 +191,7 @@ public class Board {
                             } else {
                                 stop = true;
                                 if (whiteTurn != Character.isUpperCase(spaces[currX][currY])) {
-                                    possibleMoves.add(squareToInteger(x, y));
+                                    possibleMoves.add(squareToInteger(currX, currY));
                                 }
                             }
                         } else {
