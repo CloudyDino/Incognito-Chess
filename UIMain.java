@@ -68,6 +68,9 @@ class UIMain extends JFrame {
 
                 square.addActionListener(new ClickListener());
                 square.setActionCommand(j + " " + i);
+                square.setFocusPainted(false);
+                square.setRolloverEnabled(true);
+                square.setBorderPainted(false);
 
                 buttonArr[j][i] = square;
 
