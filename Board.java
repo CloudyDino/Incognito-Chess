@@ -1,7 +1,10 @@
+import java.util.HashSet;
+import java.util.Set;
+
 public class Board {
 
     private char[][] spaces = new char[8][8];
-    private boolean currentTurn;
+    private boolean whiteTurn;
 
     public Board() {
 
@@ -27,12 +30,12 @@ public class Board {
         //
         // Where spaces[4][0] == 'K'
 
-        currentTurn = true;
+        whiteTurn = true;
     }
 
     public boolean move(int startX, int startY, int destX, int destY) {
         // Check for validity
-        if (!isValid(startX, startY, destX, destY)) {
+        if (!isValidMove(startX, startY, destX, destY)) {
             return false;
         }
 
@@ -40,101 +43,25 @@ public class Board {
         spaces[destX][destY] = spaces[startX][startY];
         spaces[startX][startY] = 0;
 
-        currentTurn = !currentTurn;
+        whiteTurn = !whiteTurn;
 
         return true;
     }
 
-    public boolean isValid(int startX, int startY, int destX, int destY) {
-        return true;
+    public boolean isValidMove(int startX, int startY, int destX, int destY) {
 
-        // if (spaces[startX][startY] == 0) {
-        //     return false;
-        // }
+        if (spaces[startX][startY] == 0 ||
+                whiteTurn != Character.isUpperCase(spaces[startX][startY])) {
+            return false;
+        }
 
-        // if (currentTurn != Character.isUpperCase(spaces[startX][startY])) {
-        //     return false;
-        // }
+        Set<Integer> possibleMoves = getPossibleMoves(startX, startY);
+        if (possibleMoves != null &&
+                possibleMoves.contains(squareToInteger(destX, destY))) {
+            // Test if the move puts the player's king in check. If no, return true
+        }
 
-        // if (spaces[destX][destY] != 0) {
-        //     if (currentTurn == Character.isUpperCase(spaces[destX][destY])) {
-        //         return false;
-        //     }
-        // }
-
-        // switch(Character.toLowerCase(spaces[startX][startY])) {
-        //     case 'r':
-        //         // ROOK
-        //         return ((destX == startX) ^ (destY == startY));
-
-        //     case 'n':
-        //         // KNIGHT
-        //         boolean check = false;
-        //         int[] signs = {-1, 1};
-        //         for (int i = 0; i < 2; i++) {
-        //             for (int j = 0; j < 2; j++) {
-        //                 if (destX == (startX + (signs[i] * 1)) && destY == (startY + (signs[j] * 2))) {
-        //                     check = true;
-        //                 }
-        //                 if (destX == (startX + (signs[i] * 2)) && destY == (startY + (signs[j] * 1))) {
-        //                     check = true;
-        //                 }
-        //             }
-        //         }
-        //         return check;
-
-        //     case 'b':
-        //         // BISHOP
-        //         return (Math.abs(startX - destX) == Math.abs(startY - destY));
-
-        //     case 'q':
-        //         // QUEEN
-        //         return ((destX == startX) ^ (destY == startY)) || (Math.abs(startX - destX) == Math.abs(startY - destY));
-
-        //     case 'k':
-        //         // KING
-        //         return (Math.abs(destX - startX) <= 1) || (Math.abs(destY - startY) <= 1);
-
-        //     case 'p':
-        //         // PAWN
-        //         boolean check2 = false;
-        //         if (currentTurn) {
-        //             if (startX - destX == 1 && startY == destY) {
-        //                 if (spaces[destX][destY] == 0) {
-        //                     check2 = true;
-        //                 }
-        //             } else if (startX - destX == 2 && startY == destY) {
-        //                 if (spaces[destX][destY] == 0) {
-        //                     if (startX == 6) {
-        //                         check2 = true;
-        //                     }
-        //                 }
-        //             } else if (startX - destX == 1 && Math.abs(startY - destY) == 1) {
-        //                 if (spaces[destX][destY] != 0) {
-        //                     check2 = true;
-        //                 }
-        //             }
-        //         } else {
-        //             if (destX - startX == 1 && startY == destY) {
-        //                 if (spaces[destX][destY] == 0) {
-        //                     check2 = true;
-        //                 }
-        //             }  else if (destX - startX == 2 && startY == destY) {
-        //                 if (spaces[destX][destY] == 0) {
-        //                     if (startX == 1) {
-        //                         check2 = true;
-        //                     }
-        //                 }
-        //             } else if (destX - startX == 1 && Math.abs(startY - destY) == 1) {
-        //                 if (spaces[destX][destY] != 0) {
-        //                     check2 = true;
-        //                 }
-        //             }
-        //         }
-        //         return check2;
-        // }
-
-        // return false;
+        return false;
     }
 
     public char[][] getBoard() {
@@ -142,11 +69,121 @@ public class Board {
     }
 
     public boolean getTurn() {
-        return currentTurn;
+        return whiteTurn;
     }
 
     public void setTurn(boolean turn) {
-        this.currentTurn = turn;
+        whiteTurn = turn;
+    }
+
+    public int squareToInteger(int x, int y) {
+        if (x < spaces.length && y < spaces.length) {
+            return x * spaces.length + y;
+        }
+        return -1;
+    }
+
+    public int squareToInteger(int[] xy) {
+        if (xy.length >= 2 && xy[0] < spaces.length && xy[1] < spaces.length) {
+            return xy[0]*spaces.length + xy[1];
+        }
+        return -1;
+    }
+
+    public int[] integerToSquare(int i) {
+        int[] square = {i/spaces.length, i%spaces.length};
+        return square;
+    }
+
+    public boolean onBoard(int x, int y) {
+        return 0 <= x && x <= spaces.length &&
+               0 <= y && y <= spaces.length;
+    }
+
+    private Set<Integer> getPossibleMoves(int x, int y) {
+        switch (Character.toLowerCase(spaces[x][y])) {
+            case 'p':
+                return getPossiblePawnMoves(x,y);
+            case 'r':
+                return getPossibleRookMoves(x,y);
+            case 'n':
+                return getPossibleKnightMoves(x,y);
+            case 'b':
+                return getPossibleBishopMoves(x,y);
+            case 'q':
+                return getPossibleQueenMoves(x,y);
+            case 'k':
+                return getPossibleKingMoves(x,y);
+        }
+        return null;
+    }
+
+    private Set<Integer> getPossiblePawnMoves(int x, int y) {
+        return null;
+        // TODO: Pawn Moves
+    }
+    
+    private Set<Integer> getPossibleKnightMoves(int x, int y) {
+        return null;
+        // TODO: Knight Moves
+    }
+
+    private Set<Integer> getPossibleRookMoves(int x, int y) {
+        return getPossibleBishopRookQueenMoves(x, y, false, true);
+    }
+
+    private Set<Integer> getPossibleBishopMoves(int x, int y) {
+        return getPossibleBishopRookQueenMoves(x, y, true, false);
+    }
+
+    private Set<Integer> getPossibleQueenMoves(int x, int y) {
+        return getPossibleBishopRookQueenMoves(x, y, true, true);
+    }
+
+    private Set<Integer> getPossibleBishopRookQueenMoves(int x, int y, boolean isBishop, boolean isRook) {
+        Set<Integer> possibleMoves = new HashSet<>();
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dy = -1; dy <= 1; dy++) {
+                if ((dx != 0 || dy != 0) &&
+                        ((isBishop && Math.abs(dx) == Math.abs(dy)) ||
+                        (isRook && Math.abs(dx) != Math.abs(dy)))) {
+                    int currX = x;
+                    int currY = y;
+                    boolean stop = false;
+                    while (!stop) {
+                        currX += dx;
+                        currY += dy;
+                        if (onBoard(currX, currY)) {
+                            if (spaces[currX][currY] == 0) {
+                                possibleMoves.add(squareToInteger(currX, currY));
+                            } else {
+                                stop = true;
+                                if (whiteTurn != Character.isUpperCase(spaces[currX][currY])) {
+                                    possibleMoves.add(squareToInteger(x, y));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return possibleMoves;
+    }
+
+    private Set<Integer> getPossibleKingMoves(int x, int y) {
+        Set<Integer> possibleMoves = new HashSet<>();
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dy = -1; dy <= 1; dy++) {
+                int currX = x + dx;
+                int currY = y + dy;
+                if ((dx != 0 || dy != 0) &&
+                        onBoard(currX, currY) &&
+                        whiteTurn != Character.isUpperCase(spaces[currX][currY])) {
+                    possibleMoves.add(squareToInteger(currX, currY));                    
+                }
+            }
+        }
+        return possibleMoves;
     }
 
 }
