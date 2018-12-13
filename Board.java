@@ -141,7 +141,7 @@ public class Board {
         }
         return possibleMoves;
     }
-    
+
     private Set<Integer> getPossibleKnightMoves(int x, int y) {
         return null;
         // TODO: Knight Moves
@@ -200,7 +200,7 @@ public class Board {
                 if ((dx != 0 || dy != 0) &&
                         onBoard(currX, currY) &&
                         whiteTurn != Character.isUpperCase(spaces[currX][currY])) {
-                    possibleMoves.add(squareToInteger(currX, currY));                    
+                    possibleMoves.add(squareToInteger(currX, currY));
                 }
             }
         }
