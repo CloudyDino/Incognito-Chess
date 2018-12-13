@@ -26,6 +26,9 @@ class UIMain extends JFrame {
     public static Board b;
     public static JButton[][] buttonArr;
     public static ArrayList<JButton> presses = new ArrayList<>();
+    Server server = new Server(5000);
+    Client client = new Client("128.61.16.102", 5000);
+
 
     // Constructor:
     public UIMain() {
