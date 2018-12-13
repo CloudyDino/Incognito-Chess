@@ -3,6 +3,7 @@ import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.event.*;
 import java.awt.Image;
+import java.lang.StringBuilder;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -103,11 +104,7 @@ class UIMain extends JFrame {
                 } else {
                     c = b.getBoard()[7-j][7-i];
                 }
-                String s = "" + Character.toLowerCase(c);
-                if (Character.isUpperCase(c)) {
-                    s = s + "2";
-                }
-                ImageIcon icon = new ImageIcon("pieces/" + s + ".png");
+                ImageIcon icon = new ImageIcon(getImageFile(c));
                 Image piece = icon.getImage();
                 Image newimg = piece.getScaledInstance(100, 100,  java.awt.Image.SCALE_SMOOTH);
                 icon = new ImageIcon(newimg);
@@ -129,18 +126,10 @@ class UIMain extends JFrame {
                     buttonArr[7-j][7-i] = square;
                 }
 
-                if (i % 2 == 0) {
-                    if (j % 2 == 0) {
-                        square.setBackground(Color.GRAY);
-                    } else {
-                        square.setBackground(Color.WHITE);
-                    }
+                if (i % 2 == j % 2) {
+                    square.setBackground(new Color(75, 115, 153));
                 } else {
-                    if (j % 2 == 0) {
-                        square.setBackground(Color.WHITE);
-                    } else {
-                        square.setBackground(Color.GRAY);
-                    }
+                    square.setBackground(new Color(234, 233, 210));
                 }
                 chessPanel.add(square);
             }
@@ -195,11 +184,7 @@ class UIMain extends JFrame {
                 } else {
                     c = b.getBoard()[7-i][7-j];
                 }
-                String s = "" + Character.toLowerCase(c);
-                if (Character.isUpperCase(c)) {
-                    s = s + "2";
-                }
-                ImageIcon icon = new ImageIcon("pieces/" + s + ".png");
+                ImageIcon icon = new ImageIcon(getImageFile(c));
                 Image piece = icon.getImage();
                 Image newimg = piece.getScaledInstance(100, 100,  java.awt.Image.SCALE_SMOOTH);
                 icon = new ImageIcon(newimg);
@@ -211,5 +196,12 @@ class UIMain extends JFrame {
 
             }
         }
+    }
+
+    private static String getImageFile(char c) {
+        StringBuilder s = new StringBuilder("pieces/.png");
+        s.insert(7, (Character.isUpperCase(c) ? 'w' : 'b'));
+        s.insert(8, Character.toLowerCase(c));
+        return s.toString();
     }
 }
