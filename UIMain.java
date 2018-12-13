@@ -32,7 +32,7 @@ class UIMain extends JFrame {
     public static ArrayList<JButton> presses = new ArrayList<>();
     static Server server;
     static Client client;
-    public static double currentval;
+    public static long currentval;
     public static boolean startColor;
 
     // Constructor:
@@ -54,7 +54,7 @@ class UIMain extends JFrame {
     public static void main(String[] args) {
         b = new Board();
 
-        currentval = (new Random()).nextDouble();
+        currentval = (new Random()).nextLong();
 
         client = new Client(args[0], 5000);
 
@@ -68,11 +68,11 @@ class UIMain extends JFrame {
     }
 
     public static void initHandshake() {
-        client.sendDouble(currentval);
+        client.sendLong(currentval);
     }
 
-    public static boolean handshake(double d) {
-        if (currentval == d) {
+    public static boolean handshake(long l) {
+        if (currentval == l) {
             initHandshake();
             return false;
         } else if (currentval > d) {

@@ -53,15 +53,15 @@ public class Client implements Runnable {
         // }
     }
 
-    public void sendDouble(double d) {
+    public void sendLong(long l) {
 
         while(out == null) {
 
         }
 
         try {
-            System.out.println("Sent: " + d);
-            out.writeDouble(d);
+            System.out.println("Sent: " + l);
+            out.writeLong(l);;
         } catch(IOException e) {
             e.printStackTrace();
         }

@@ -37,9 +37,9 @@ public class Server implements Runnable
 
             while (!handshake) {
                 System.out.println("Handshaking...");
-                double d = in.readDouble();
-                System.out.println("Recieved: " + d);
-                handshake = UIMain.handshake(d);
+                long l = in.readLong();
+                System.out.println("Recieved: " + l);
+                handshake = UIMain.handshake(l);
             }
 
 
