@@ -4,6 +4,7 @@ import java.awt.GridLayout;
 import java.awt.event.*;
 import java.awt.Image;
 import java.util.ArrayList;
+import java.util.Random;
 
 import javax.swing.*;
 
@@ -26,9 +27,10 @@ class UIMain extends JFrame {
     public static Board b;
     public static JButton[][] buttonArr;
     public static ArrayList<JButton> presses = new ArrayList<>();
-    Server server = new Server(5000);
-    Client client = new Client("128.61.16.102", 5000);
-
+    static Server server;
+    static Client client;
+    public static double currentval;
+    public static boolean startColor;
 
     // Constructor:
     public UIMain() {
@@ -46,6 +48,40 @@ class UIMain extends JFrame {
 
     public static void main(String[] args) {
         b = new Board();
+
+        client = new Client("128.61.16.102", 5000);
+
+        Thread clientThread = new Thread(client);
+        clientThread.start();
+
+        server = new Server(5000);
+
+        Thread serverThread = new Thread(server);
+        serverThread.start();
+    }
+
+    public static void initHandshake() {
+        Random r = new Random();
+        currentval = r.nextDouble();
+        client.sendDouble(r.nextDouble());
+    }
+
+    public static boolean handshake(double d) {
+        if (currentval == d) {
+            initHandshake();
+            return false;
+        } else if (currentval > d) {
+            startColor = true;
+        } else {
+            startColor = false;
+            b.setTurn(false);
+        }
+
+        return true;
+    }
+
+    public static void startgame() {
+        System.out.println("You are: " + (startColor ? "White":"Black"));
 
         JFrame f = new UIMain();
 
@@ -111,30 +147,43 @@ class UIMain extends JFrame {
             int endx = (end.charAt(0) - '0');
             int endy = (end.charAt(2) - '0');
 
+            int[] sending = {startx, starty, endx, endy};
+
             boolean check = b.move(startx, starty, endx, endy);
 
             if (check) {
-                for (int i = 0; i < 8; i++) {
-                    for (int j = 0; j < 8; j++) {
+                refreshBoard();
 
-                        char c = b.getBoard()[i][j];
-                        String s = "" + Character.toLowerCase(c);
-                        if (Character.isUpperCase(c)) {
-                            s = s + "2";
-                        }
-                        ImageIcon icon = new ImageIcon("pieces/" + s + ".png");
-                        Image piece = icon.getImage();
-                        Image newimg = piece.getScaledInstance(100, 100,  java.awt.Image.SCALE_SMOOTH);
-                        icon = new ImageIcon(newimg);
-                        buttonArr[i][j].setIcon(icon);
-
-                    }
-                }
+                presses.clear();
+                client.sendMove(sending);
+            } else {
+                presses.clear();
             }
-
-            presses.clear();
         }
     }
 
+    public static void recieveMove(int[] move) {
+        b.move(move[0], move[1], move[2], move[3]);
 
+        refreshBoard();
+    }
+
+    public static void refreshBoard() {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+
+                char c = b.getBoard()[i][j];
+                String s = "" + Character.toLowerCase(c);
+                if (Character.isUpperCase(c)) {
+                    s = s + "2";
+                }
+                ImageIcon icon = new ImageIcon("pieces/" + s + ".png");
+                Image piece = icon.getImage();
+                Image newimg = piece.getScaledInstance(100, 100,  java.awt.Image.SCALE_SMOOTH);
+                icon = new ImageIcon(newimg);
+                buttonArr[i][j].setIcon(icon);
+
+            }
+        }
+    }
 }

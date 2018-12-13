@@ -1,16 +1,20 @@
 import java.net.*;
 import java.io.*;
 
-public class Server
+public class Server implements Runnable
 {
 	//initialize socket and input stream
 	private Socket		 socket = null;
 	private ServerSocket server = null;
-	private DataInputStream in	 = null;
+    private DataInputStream in	 = null;
+    private int port;
 
 	// constructor with port
-	public Server(int port)
-	{
+	public Server(int port) {
+        this.port = port;
+    }
+
+    public void run() {
 		// starts server and waits for a connection
 		try
 		{
@@ -24,23 +28,47 @@ public class Server
 
 			// takes input from the client socket
 			in = new DataInputStream(
-				new BufferedInputStream(socket.getInputStream()));
+                new BufferedInputStream(socket.getInputStream()));
 
-			String line = "";
+
+            boolean handshake = false;
+
+            UIMain.initHandshake();
+
+            while (!handshake) {
+                System.out.println("Handshaking...");
+                double d = in.readDouble();
+                System.out.println("d");
+                handshake = UIMain.handshake(d);
+            }
+
+
+            UIMain.startgame();
+
+
+			int line = 1;
 
 			// reads message from client until "Over" is sent
-			while (!line.equals("Over"))
+			while (line != -1)
 			{
-				try
-				{
-					line = in.readUTF();
-					System.out.println(line);
+                int[] move = new int[4];
+                for (int i = 0; i < 4; i++) {
+                    try
+                    {
+                        line = in.readInt();
+                        System.out.println(line);
+                        move[i] = line;
 
-				}
-				catch(IOException i)
-				{
-					i.printStackTrace();
-				}
+                    }
+                    catch(IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+
+                System.out.println("end move\n");
+
+                UIMain.recieveMove(move);
 			}
 			System.out.println("Closing connection");
 

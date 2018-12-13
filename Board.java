@@ -145,4 +145,8 @@ public class Board {
         return currentTurn;
     }
 
+    public void setTurn(boolean turn) {
+        this.currentTurn = turn;
+    }
+
 }
