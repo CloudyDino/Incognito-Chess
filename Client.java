@@ -19,7 +19,9 @@ public class Client implements Runnable {
 		// establish a connection
 		try {
 			socket = new Socket(address, port);
-			System.out.println("Connected");
+            System.out.println("Connected");
+
+
 
 			// takes input from terminal
 			input = new DataInputStream(System.in);
@@ -30,7 +32,9 @@ public class Client implements Runnable {
 			u.printStackTrace();
 		} catch(IOException i) {
 			i.printStackTrace();
-		}
+        }
+
+        UIMain.initHandshake();
 
 		// // keep reading until "Over" is input
         // while (UIMain.sending.length == 4) {
@@ -50,6 +54,11 @@ public class Client implements Runnable {
     }
 
     public void sendDouble(double d) {
+
+        while(out == null) {
+
+        }
+
         try {
             out.writeDouble(d);
         } catch(IOException e) {

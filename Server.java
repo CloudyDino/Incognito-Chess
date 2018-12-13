@@ -33,7 +33,7 @@ public class Server implements Runnable
 
             boolean handshake = false;
 
-            UIMain.initHandshake();
+            
 
             while (!handshake) {
                 System.out.println("Handshaking...");
