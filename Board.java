@@ -58,7 +58,7 @@ public class Board {
         Set<Integer> possibleMoves = getPossibleMoves(startX, startY);
         if (possibleMoves != null &&
                 possibleMoves.contains(squareToInteger(destX, destY))) {
-            // Test if the move puts the player's king in check. If no, return true
+            return true;
         }
 
         return false;
