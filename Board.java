@@ -212,7 +212,8 @@ public class Board {
                 int currY = y + dy;
                 if ((dx != 0 || dy != 0) &&
                         onBoard(currX, currY) &&
-                        whiteTurn != Character.isUpperCase(spaces[currX][currY])) {
+                        (spaces[currX][currY] == 0 ||
+                        whiteTurn != Character.isUpperCase(spaces[currX][currY]))) {
                     possibleMoves.add(squareToInteger(currX, currY));
                 }
             }
