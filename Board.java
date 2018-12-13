@@ -119,22 +119,24 @@ public class Board {
     }
 
     private Set<Integer> getPossiblePawnMoves(int x, int y) {
-        // TODO: Real Pawn Moves
+        // TODO: All Pawn Moves: En Passant, Promotion?
 
         Set<Integer> possibleMoves = new HashSet<>();
         int dy = (whiteTurn ? 1 : -1);
         int startY = (whiteTurn ? 1 : 6);
-        if (onBoard(x, y + dy) && spaces[x][y + dy] == 0) {
-            possibleMoves.add(squareToInteger(x, y + dy));
+        int currY = y + dy;
+        if (onBoard(x, currY) && spaces[x][currY] == 0) {
+            possibleMoves.add(squareToInteger(x, currY));
         }
         if (possibleMoves.size() > 0 && y == startY && spaces[x][y + 2*dy] == 0) {
-            possibleMoves.add(squareToInteger(x, y + 2*dy));
+            possibleMoves.add(squareToInteger(x, currY + dy));
         }
 
         for (int dx = -1; dx <= 1; dx += 2) {
-            if (onBoard(x + dx, y + dy) && spaces[x][y + dy] != 0
-                    && whiteTurn != Character.isUpperCase(spaces[x][y + dy])) {
-                possibleMoves.add(squareToInteger(x, y + dy));
+            int currX = x + dx;
+            if (onBoard(currX, currY) && spaces[currX][currY] != 0
+                    && whiteTurn != Character.isUpperCase(spaces[currX][currY])) {
+                possibleMoves.add(squareToInteger(currX, currY));
             }
         }
         return possibleMoves;
@@ -179,6 +181,8 @@ public class Board {
                                     possibleMoves.add(squareToInteger(x, y));
                                 }
                             }
+                        } else {
+                            stop = true;
                         }
                     }
                 }
