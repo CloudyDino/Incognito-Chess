@@ -15,9 +15,11 @@ class ClickListener implements ActionListener {
     public static JButton lastPressed;
 
     public void actionPerformed(ActionEvent e) {
-        JButton curr = (JButton) e.getSource();
-        lastPressed = curr;
-        UIMain.takeTurn();
+        if (UIMain.startColor == UIMain.b.getTurn()) {
+            JButton curr = (JButton) e.getSource();
+            lastPressed = curr;
+            UIMain.takeTurn();
+        }
         //curr.setText("LMAO");
     }
 }
@@ -49,7 +51,7 @@ class UIMain extends JFrame {
     public static void main(String[] args) {
         b = new Board();
 
-        client = new Client("128.61.16.102", 5000);
+        client = new Client(args[0], 5000);
 
         Thread clientThread = new Thread(client);
         clientThread.start();
@@ -63,7 +65,7 @@ class UIMain extends JFrame {
     public static void initHandshake() {
         Random r = new Random();
         currentval = r.nextDouble();
-        client.sendDouble(r.nextDouble());
+        client.sendDouble(currentval);
     }
 
     public static boolean handshake(double d) {
@@ -155,6 +157,7 @@ class UIMain extends JFrame {
                 refreshBoard();
 
                 presses.clear();
+                System.out.println("Send initializing...");
                 client.sendMove(sending);
             } else {
                 presses.clear();
