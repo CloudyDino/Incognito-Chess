@@ -187,7 +187,7 @@ class UIMain extends JFrame {
                 }
                 ImageIcon icon = new ImageIcon(getImageFile(c));
                 Image piece = icon.getImage();
-                Image newimg = piece.getScaledInstance(100, 100,  java.awt.Image.SCALE_SMOOTH);
+                Image newimg = piece.getScaledInstance(120, 120,  java.awt.Image.SCALE_SMOOTH);
                 icon = new ImageIcon(newimg);
                 if (startColor) {
                     buttonArr[i][j].setIcon(icon);
