@@ -33,12 +33,12 @@ public class Server implements Runnable
 
             boolean handshake = false;
 
-            
+
 
             while (!handshake) {
                 System.out.println("Handshaking...");
                 double d = in.readDouble();
-                System.out.println("d");
+                System.out.println("Recieved: " + d);
                 handshake = UIMain.handshake(d);
             }
 

@@ -60,6 +60,7 @@ public class Client implements Runnable {
         }
 
         try {
+            System.out.println("Sent: " + d);
             out.writeDouble(d);
         } catch(IOException e) {
             e.printStackTrace();

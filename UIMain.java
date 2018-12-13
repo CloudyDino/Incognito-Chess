@@ -51,6 +51,8 @@ class UIMain extends JFrame {
     public static void main(String[] args) {
         b = new Board();
 
+        currentval = (new Random()).nextDouble();
+
         client = new Client(args[0], 5000);
 
         Thread clientThread = new Thread(client);
@@ -63,8 +65,6 @@ class UIMain extends JFrame {
     }
 
     public static void initHandshake() {
-        Random r = new Random();
-        currentval = r.nextDouble();
         client.sendDouble(currentval);
     }
 
