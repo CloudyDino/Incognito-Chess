@@ -75,7 +75,7 @@ class UIMain extends JFrame {
         if (currentval == l) {
             initHandshake();
             return false;
-        } else if (currentval > d) {
+        } else if (currentval > l) {
             startColor = true;
         } else {
             startColor = false;
