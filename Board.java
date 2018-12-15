@@ -156,10 +156,13 @@ public class Board {
 
         } else if (Character.toLowerCase(spaces[destX][destY]) == 'p') {
             if (Math.abs(startY - destY) == 2) {
+                // moved two spaces
                 enPassant = squareToInteger(destX, destY);
             } else if (destX != startX && spaces[destX][destY] == 0) {
+                // en passant
                 spaces[destX][startY] = 0;
             } else if (destY == 0 || destY == SIZE - 1) {
+                // pawn promotion
                 spaces[destX][destY] = (whiteTurn ? Character.toUpperCase(promoteTo) : Character.toLowerCase(promoteTo));
             }
         }
@@ -181,7 +184,32 @@ public class Board {
         if (possibleMoves != null &&
                 possibleMoves.contains(squareToInteger(destX, destY))) {
             // TODO: Check if this move puts the king of current turn's color into check. Only return true if it doesn't
-            return true;
+            char[][] temp = spaces.clone();
+            temp[destX][destY] = temp[startX][startY];
+            temp[startX][startY] = 0;
+            if (Character.toLowerCase(temp[destX][destY]) == 'p' &&
+                    destX != startX && temp[destX][destY] == 0) {
+                // en passant
+                temp[destX][startY] = 0;
+            }
+            int king = -1;
+            Set<Integer> attacked = new HashSet<>();
+            for (int x = 0; x < SIZE; x++) {
+                for (int y = 0; y < SIZE; y++) {
+                    if (temp[x][y] == (whiteTurn ? 'K' : 'k')) {
+                        king = squareToInteger(x, y);
+                    }
+                        
+                    Set<Integer> moves = getPossibleMoves(x, y);
+                    if (moves != null &&
+                            ((whiteTurn && Character.isUpperCase(temp[x][y])) || (
+                            !whiteTurn && Character.isLowerCase(temp[x][y])))) {
+                        attacked.addAll(moves);
+                    }
+                }
+            }
+
+            return !attacked.contains(king);
         }
 
         return false;
