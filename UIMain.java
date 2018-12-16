@@ -148,14 +148,20 @@ class UIMain extends JFrame {
             String start = presses.get(0).getActionCommand();
             String end = presses.get(1).getActionCommand();
 
-            int startx = (start.charAt(0) - '0');
-            int starty = (start.charAt(2) - '0');
-            int endx = (end.charAt(0) - '0');
-            int endy = (end.charAt(2) - '0');
+            int startX = (start.charAt(0) - '0');
+            int startY = (start.charAt(2) - '0');
+            int endX = (end.charAt(0) - '0');
+            int endY = (end.charAt(2) - '0');
+            char promotion = 'Q';
 
-            int[] sending = {startx, starty, endx, endy};
+            if (Character.toLowerCase(b.getBoard()[startX][startY]) == 'p' &&
+                    (endY == 0 || endY == b.SIZE - 1)) {
+                promotion = getPromotionPiece();
+            }
 
-            boolean check = b.move(startx, starty, endx, endy);
+            int[] sending = {startX, startY, endX, endY};
+
+            boolean check = b.move(startX, startY, endX, endY, promotion);
 
             if (check) {
                 refreshBoard();
@@ -197,6 +203,11 @@ class UIMain extends JFrame {
 
             }
         }
+    }
+
+    public static char getPromotionPiece() {
+        // TODO: make popup to ask if player wants Knight, Bishop, Rook, or Queen
+        return 'Q';
     }
 
     private static String getImageFile(char c) {

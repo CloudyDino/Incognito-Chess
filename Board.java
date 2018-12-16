@@ -11,6 +11,7 @@ public class Board {
     private int enPassant;
     private Set<Integer> whiteAttack, blackAttack;
     private boolean whiteInCheck, blackInCheck;
+    int movesSincePawnOrCapture;
 
     public Board() {
 
@@ -43,6 +44,7 @@ public class Board {
         castleBQ = true;
         enPassant = -1;
         updateAttack();
+        movesSincePawnOrCapture = 0;
     }
 
     public char[][] getBoard() {
@@ -79,6 +81,17 @@ public class Board {
     public boolean onBoard(int x, int y) {
         return 0 <= x && x < SIZE &&
                0 <= y && y < SIZE;
+    }
+
+    public GameStatus getGameStatus() {
+        // TODO: Check if there are any possible moves for the possible turn. If not, two possibilites:
+        // 1) current king in check in which case other color won
+        // 2) current king not in check in which stalemates
+
+        if (movesSincePawnOrCapture == 100) {
+            return GameStatus.DRAW;
+        }
+        return GameStatus.IN_PROGRESS;
     }
 
     public void updateAttack() {
@@ -145,6 +158,10 @@ public class Board {
 
         // Make the update
         enPassant = -1;
+        movesSincePawnOrCapture++;
+        if (spaces[destX][destY] != 0) {
+            movesSincePawnOrCapture = 0;
+        }
         spaces[destX][destY] = spaces[startX][startY];
         spaces[startX][startY] = 0;
 
@@ -155,6 +172,7 @@ public class Board {
             spaces[rookX][startY] = 0;
 
         } else if (Character.toLowerCase(spaces[destX][destY]) == 'p') {
+            movesSincePawnOrCapture = 0;
             if (Math.abs(startY - destY) == 2) {
                 // moved two spaces
                 enPassant = squareToInteger(destX, destY);
