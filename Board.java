@@ -84,14 +84,27 @@ public class Board {
     }
 
     public GameStatus getGameStatus() {
-        // TODO: Check if there are any possible moves for the possible turn. If not, two possibilites:
-        // 1) current king in check in which case other color won
-        // 2) current king not in check in which stalemates
 
-        if (movesSincePawnOrCapture == 100) {
-            return GameStatus.DRAW;
+        // If there exist possible moves for the current color then the game is
+        // either drawn by the 50 move rule or is still in progress
+        for (int x = 0; x < SIZE; x++) {
+            for (int y = 0; y < SIZE; y++) {
+                if (spaces[x][y] != 0 && whiteTurn == Character.isUpperCase(spaces[x][y]) && getLegalMoves(x, y).size() > 0) {
+                    if (movesSincePawnOrCapture == 100) {
+                        return GameStatus.DRAW;
+                    }
+                    return GameStatus.IN_PROGRESS;
+                }
+            }
         }
-        return GameStatus.IN_PROGRESS;
+
+        // No moves for current color,
+        if (whiteTurn && whiteInCheck) {
+            return GameStatus.BLACK_WON;
+        } else if (!whiteTurn && blackInCheck) {
+            return GameStatus.WHITE_WON;
+        }
+        return GameStatus.STALEMATE;
     }
 
     public void updateAttack() {
@@ -198,11 +211,28 @@ public class Board {
             return false;
         }
 
+        Set<Integer> legalMoves = getLegalMoves(startX, startY);
+        if (legalMoves.contains(squareToInteger(destX, destY))) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @return Set<Integer> a nonnull set of integers corresponding to the
+     *         squares that the starting square can legally go to
+     */
+    private Set<Integer> getLegalMoves(int startX, int startY) {
         Set<Integer> possibleMoves = getPossibleMoves(startX, startY);
-        if (possibleMoves != null &&
-                possibleMoves.contains(squareToInteger(destX, destY))) {
-            // TODO: Check if this move puts the king of current turn's color into check. Only return true if it doesn't
+        Set<Integer> legalMoves = new HashSet<>();
+
+        for (int pm : possibleMoves) {
+            int[] pmSquare = integerToSquare(pm);
+            int destX = pmSquare[0];
+            int destY = pmSquare[1];
             char[][] temp = spaces.clone();
+
             temp[destX][destY] = temp[startX][startY];
             temp[startX][startY] = 0;
             if (Character.toLowerCase(temp[destX][destY]) == 'p' &&
@@ -210,6 +240,7 @@ public class Board {
                 // en passant
                 temp[destX][startY] = 0;
             }
+
             int king = -1;
             Set<Integer> attacked = new HashSet<>();
             for (int x = 0; x < SIZE; x++) {
@@ -226,11 +257,11 @@ public class Board {
                     }
                 }
             }
-
-            return !attacked.contains(king);
+            if (!attacked.contains(king)) {
+                legalMoves.add(pm);
+            }
         }
-
-        return false;
+        return legalMoves;
     }
 
 
@@ -253,8 +284,6 @@ public class Board {
     }
 
     private Set<Integer> getPossiblePawnMoves(int x, int y) {
-        // TODO: En Passant
-
         Set<Integer> possibleMoves = new HashSet<>();
         int dy = (whiteTurn ? 1 : -1);
         int startY = (whiteTurn ? 1 : 6);
