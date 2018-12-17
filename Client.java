@@ -81,6 +81,8 @@ public class Client implements Runnable {
         } catch(IOException e) {
             e.printStackTrace();
         }
+
+        System.out.printf("Sent:\t\t(%d, %d) to (%d, %d) - %c%n", move[0], move[1], move[2], move[3], promotion);
     }
 
     public void disconnect() {

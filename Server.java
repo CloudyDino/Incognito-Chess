@@ -56,7 +56,6 @@ public class Server implements Runnable
                     try
                     {
                         line = in.readInt();
-                        System.out.println(line);
                         move[i] = line;
 
                     }
@@ -76,7 +75,7 @@ public class Server implements Runnable
                     e.printStackTrace();
                 }
 
-                System.out.println("end move\n");
+                System.out.printf("Received:\t(%d, %d) to (%d, %d) - %c%n", move[0], move[1], move[2], move[3], promotion);
 
                 UIMain.recieveMove(move, promotion);
             }

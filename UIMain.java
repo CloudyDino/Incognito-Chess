@@ -167,7 +167,6 @@ class UIMain extends JFrame {
                 refreshBoard();
 
                 presses.clear();
-                System.out.println("Send initializing...");
                 client.sendMove(sending, promotion);
             } else {
                 presses.clear();
