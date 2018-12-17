@@ -235,7 +235,11 @@ public class Board {
             int[] pmSquare = integerToSquare(pm);
             int destX = pmSquare[0];
             int destY = pmSquare[1];
-            char[][] temp = spaces.clone();
+
+            char[][] temp = new char[SIZE][];
+            for(int x = 0; x < SIZE; x++) {
+                temp[x] = spaces[x].clone();
+            }
 
             temp[destX][destY] = temp[startX][startY];
             temp[startX][startY] = 0;
@@ -255,8 +259,7 @@ public class Board {
 
                     Set<Integer> moves = getPossibleMoves(x, y);
                     if (moves != null &&
-                            ((whiteTurn && Character.isUpperCase(temp[x][y])) || (
-                            !whiteTurn && Character.isLowerCase(temp[x][y])))) {
+                            whiteTurn != Character.isUpperCase(temp[x][y])) {
                         attacked.addAll(moves);
                     }
                 }
