@@ -67,13 +67,19 @@ public class Client implements Runnable {
         }
     }
 
-    public void sendMove(int[] move) {
+    public void sendMove(int[] move, char promotion) {
         for (int i = 0; i < move.length; i++) {
             try {
                 out.writeInt(move[i]);
             } catch(IOException e) {
                 e.printStackTrace();
             }
+        }
+
+        try {
+            out.writeChar(promotion);
+        } catch(IOException e) {
+            e.printStackTrace();
         }
     }
 

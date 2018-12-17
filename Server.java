@@ -66,9 +66,19 @@ public class Server implements Runnable
                     }
                 }
 
+                char promotion = 'Q';
+                try
+                {
+                    promotion = in.readChar();
+                }
+                catch(IOException e)
+                {
+                    e.printStackTrace();
+                }
+
                 System.out.println("end move\n");
 
-                UIMain.recieveMove(move);
+                UIMain.recieveMove(move, promotion);
             }
         } catch (IOException e) {
             e.printStackTrace();

@@ -168,15 +168,15 @@ class UIMain extends JFrame {
 
                 presses.clear();
                 System.out.println("Send initializing...");
-                client.sendMove(sending);
+                client.sendMove(sending, promotion);
             } else {
                 presses.clear();
             }
         }
     }
 
-    public static void recieveMove(int[] move) {
-        b.move(move[0], move[1], move[2], move[3]);
+    public static void recieveMove(int[] move, char promotion) {
+        b.move(move[0], move[1], move[2], move[3], promotion);
 
         refreshBoard();
     }
