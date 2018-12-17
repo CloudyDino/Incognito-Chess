@@ -146,6 +146,13 @@ public class Board {
         return move(startX, startY, destX, destY, 'Q');
     }
 
+    /**
+     * Makes the move of the piece from (startX, startY) to (destX, destY) and
+     * then promotes the piece to promoteTo if it is a pawn that has reached the
+     * other end. Only does the move if it is valid
+     * 
+     * @return boolean if the move was valid and thus changed the board
+     */
     public boolean move(int startX, int startY, int destX, int destY, char promoteTo) {
         // Check for validity
         if (!isValidMove(startX, startY, destX, destY)) {
@@ -208,6 +215,9 @@ public class Board {
         return true;
     }
 
+    /**
+     * @return boolean if the piece can go from (startX, startY) to (destX, destY)
+     */
     public boolean isValidMove(int startX, int startY, int destX, int destY) {
 
         if (spaces[startX][startY] == 0 ||
@@ -215,12 +225,7 @@ public class Board {
             return false;
         }
 
-        Set<Integer> legalMoves = getLegalMoves(startX, startY);
-        if (legalMoves.contains(squareToInteger(destX, destY))) {
-            return true;
-        }
-
-        return false;
+        return getLegalMoves(startX, startY).contains(squareToInteger(destX, destY));
     }
 
     /**
@@ -257,9 +262,9 @@ public class Board {
                         king = squareToInteger(x, y);
                     }
 
-                    Set<Integer> moves = getPossibleMoves(x, y);
-                    if (moves != null &&
-                            whiteTurn != Character.isUpperCase(temp[x][y])) {
+                    Set<Integer> moves;
+                    if (whiteTurn != Character.isUpperCase(temp[x][y]) &&
+                            (moves = getPossibleMoves(x, y)) != null) {
                         attacked.addAll(moves);
                     }
                 }

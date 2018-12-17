@@ -7,7 +7,7 @@ public class asciiChess {
         Board board = new Board();
         Scanner in = new Scanner(System.in);
 
-        while (true) {
+        while (board.getGameStatus() == GameStatus.IN_PROGRESS) {
 
             System.out.println();
             printBoard(board);
@@ -22,6 +22,7 @@ public class asciiChess {
                 System.out.println("Invalid move");
             }
         }
+        in.close();
     }
 
     public static void printBoard(Board board) {
