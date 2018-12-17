@@ -122,7 +122,7 @@ public class Board {
                         blackKing = squareToInteger(x, y);
                         break;
                 }
-                    
+
                 Set<Integer> moves = getPossibleMoves(x, y);
                 if (moves != null) {
                     if (Character.isUpperCase(spaces[x][y])) {
@@ -136,6 +136,10 @@ public class Board {
 
         whiteInCheck = blackAttack.contains(whiteKing);
         blackInCheck = whiteAttack.contains(blackKing);
+    }
+
+    public boolean doesPromote(int startX, int startY, int destX, int destY) {
+        return (Character.toLowerCase(spaces[destX][destY]) == 'p') && (destY == 0 || destY == SIZE - 1);
     }
 
     public boolean move(int startX, int startY, int destX, int destY) {
@@ -248,7 +252,7 @@ public class Board {
                     if (temp[x][y] == (whiteTurn ? 'K' : 'k')) {
                         king = squareToInteger(x, y);
                     }
-                        
+
                     Set<Integer> moves = getPossibleMoves(x, y);
                     if (moves != null &&
                             ((whiteTurn && Character.isUpperCase(temp[x][y])) || (

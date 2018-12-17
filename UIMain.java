@@ -34,6 +34,7 @@ class UIMain extends JFrame {
     static Client client;
     public static long currentval;
     public static boolean startColor;
+    public static JFrame f;
 
     // Constructor:
     public UIMain() {
@@ -87,7 +88,7 @@ class UIMain extends JFrame {
     public static void startgame() {
         System.out.println("You are: " + (startColor ? "White":"Black"));
 
-        JFrame f = new UIMain();
+        f = new UIMain();
         f.setResizable(false);
 
         Container contentPane = f.getContentPane();
@@ -154,8 +155,7 @@ class UIMain extends JFrame {
             int endY = (end.charAt(2) - '0');
             char promotion = 'Q';
 
-            if (Character.toLowerCase(b.getBoard()[startX][startY]) == 'p' &&
-                    (endY == 0 || endY == b.SIZE - 1)) {
+            if (b.doesPromote(startX, startY, endX, endY)) {
                 promotion = getPromotionPiece();
             }
 
@@ -207,6 +207,35 @@ class UIMain extends JFrame {
 
     public static char getPromotionPiece() {
         // TODO: make popup to ask if player wants Knight, Bishop, Rook, or Queen
+
+        Object[] options = {"Queen",
+                    "Rook",
+                    "Bishop",
+                    "Knight"};
+
+        int chosen = -1;
+
+        while (chosen == -1) {
+            chosen = JOptionPane.showOptionDialog(f,
+                "Please choose a piece to promote to.",
+                "Pawn Promotion",
+                JOptionPane.YES_NO_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[0]);
+        }
+
+        if (chosen == 0) {
+            return 'Q';
+        } else if (chosen == 1) {
+            return 'R';
+        } else if (chosen == 2) {
+            return 'B';
+        } else if (chosen == 3) {
+            return 'k';
+        }
+
         return 'Q';
     }
 
