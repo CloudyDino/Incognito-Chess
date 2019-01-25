@@ -1,7 +1,6 @@
-import java.io.IOException;
 import java.util.Scanner;
 
-public class asciiChess {
+public class AsciiChess {
 
     public static void main(String[] args) {
         Board board = new Board();
@@ -28,9 +27,9 @@ public class asciiChess {
     public static void printBoard(Board board) {
         char[][] arr = board.getBoard();
 
-        System.out.println("Turn: " + (board.getTurn()? "White":"Black"));
+        System.out.println("Turn: " + (board.getTurn() ? "White" : "Black"));
 
-        for (int y = arr[0].length-1; y >= 0; y--) {
+        for (int y = arr[0].length - 1; y >= 0; y--) {
             for (int x = 0; x < arr.length; x++) {
                 System.out.print(arr[x][y] + " ");
             }

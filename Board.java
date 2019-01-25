@@ -3,7 +3,7 @@ import java.util.Set;
 
 public class Board {
 
-    public final int SIZE = 8;
+    public static final int SIZE = 8;
 
     private char[][] spaces = new char[SIZE][SIZE];
     private boolean whiteTurn;
@@ -11,32 +11,10 @@ public class Board {
     private int enPassant;
     private Set<Integer> whiteAttack, blackAttack;
     private boolean whiteInCheck, blackInCheck;
-    int movesSincePawnOrCapture;
+    private int movesSincePawnOrCapture;
 
     public Board() {
-
-        char[] setup = {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'};
-        for (int i = 0; i < 8; i++) {
-            spaces[i][7] = setup[i];
-            spaces[i][6] = 'p';
-            spaces[i][1] = 'P';
-            spaces[i][0] = Character.toUpperCase(setup[i]);
-        }
-
-        // Results in:
-        //
-        // 7) r n b q k b n r
-        // 6) p p p p p p p p
-        // 5) - - - - - - - -
-        // 4) - - - - - - - -
-        // 3) - - - - - - - -
-        // 2) - - - - - - - -
-        // 1) P P P P P P P P
-        // 0) R N B Q K B N R
-        //    0 1 2 3 4 5 6 7
-        //
-        // Where spaces[4][0] == 'K'
-
+        setupBoard();
         whiteTurn = true;
         castleWK = true;
         castleWQ = true;
@@ -45,6 +23,29 @@ public class Board {
         enPassant = -1;
         updateAttack();
         movesSincePawnOrCapture = 0;
+    }
+
+    /**
+     * Results in:
+     *  7) r n b q k b n r
+     *  6) p p p p p p p p
+     *  5) - - - - - - - -
+     *  4) - - - - - - - -
+     *  3) - - - - - - - -
+     *  2) - - - - - - - -
+     *  1) P P P P P P P P
+     *  0) R N B Q K B N R
+     *     0 1 2 3 4 5 6 7
+     * Where spaces[4][0] == 'K'
+     */
+    private void setupBoard() {
+        char[] setup = {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'};
+        for (int i = 0; i < SIZE; i++) {
+            spaces[i][7] = setup[i];
+            spaces[i][6] = 'p';
+            spaces[i][1] = 'P';
+            spaces[i][0] = Character.toUpperCase(setup[i]);
+        }
     }
 
     public char[][] getBoard() {
@@ -68,19 +69,19 @@ public class Board {
 
     public int squareToInteger(int[] xy) {
         if (xy.length >= 2 && xy[0] < SIZE && xy[1] < SIZE) {
-            return xy[0]*SIZE + xy[1];
+            return xy[0] * SIZE + xy[1];
         }
         return -1;
     }
 
     public int[] integerToSquare(int i) {
-        int[] square = {i/SIZE, i%SIZE};
+        int[] square = {i / SIZE, i % SIZE};
         return square;
     }
 
     public boolean onBoard(int x, int y) {
-        return 0 <= x && x < SIZE &&
-               0 <= y && y < SIZE;
+        return 0 <= x && x < SIZE
+            && 0 <= y && y < SIZE;
     }
 
     public GameStatus getGameStatus() {
@@ -114,7 +115,7 @@ public class Board {
         blackAttack = new HashSet<>();
         for (int x = 0; x < SIZE; x++) {
             for (int y = 0; y < SIZE; y++) {
-                switch (spaces[x][y]){
+                switch (spaces[x][y]) {
                     case 'K':
                         whiteKing = squareToInteger(x, y);
                         break;
@@ -159,7 +160,44 @@ public class Board {
             return false;
         }
 
-        // Change castling if king moves or rook moves from original position
+        updateCastling(startX, startY);
+
+        // Make the update
+        enPassant = -1;
+        movesSincePawnOrCapture++;
+        if (spaces[destX][destY] != 0) {
+            movesSincePawnOrCapture = 0;
+        }
+        spaces[destX][destY] = spaces[startX][startY];
+        spaces[startX][startY] = 0;
+
+        if (Character.toLowerCase(spaces[destX][destY]) == 'k' && Math.abs(startX - destX) == 2) {
+            // castle
+            int rookX = (startX > destX ? 0 : SIZE - 1);
+            spaces[(startX + destX) / 2][startY] = spaces[rookX][startY];
+            spaces[rookX][startY] = 0;
+
+        } else if (Character.toLowerCase(spaces[destX][destY]) == 'p') {
+            movesSincePawnOrCapture = 0;
+            if (Math.abs(startY - destY) == 2) {
+                // moved two spaces
+                enPassant = squareToInteger(destX, destY);
+            } else if (destX != startX && spaces[destX][destY] == 0) {
+                // en passant
+                spaces[destX][startY] = 0;
+            } else if (destY == 0 || destY == SIZE - 1) {
+                // pawn promotion
+                spaces[destX][destY] = (whiteTurn ? Character.toUpperCase(promoteTo)
+                        : Character.toLowerCase(promoteTo));
+            }
+        }
+
+        whiteTurn = !whiteTurn;
+        updateAttack();
+        return true;
+    }
+
+    private void updateCastling(int startX, int startY) {
         if (startY == 0) {
             if (spaces[startX][startY] == 'K') {
                 castleWK = false;
@@ -179,40 +217,6 @@ public class Board {
                 castleBK = false;
             }
         }
-
-        // Make the update
-        enPassant = -1;
-        movesSincePawnOrCapture++;
-        if (spaces[destX][destY] != 0) {
-            movesSincePawnOrCapture = 0;
-        }
-        spaces[destX][destY] = spaces[startX][startY];
-        spaces[startX][startY] = 0;
-
-        if (Character.toLowerCase(spaces[destX][destY]) == 'k' && Math.abs(startX - destX) == 2) {
-            // castle
-            int rookX = (startX > destX ? 0 : SIZE - 1);
-            spaces[(startX + destX)/2][startY] = spaces[rookX][startY];
-            spaces[rookX][startY] = 0;
-
-        } else if (Character.toLowerCase(spaces[destX][destY]) == 'p') {
-            movesSincePawnOrCapture = 0;
-            if (Math.abs(startY - destY) == 2) {
-                // moved two spaces
-                enPassant = squareToInteger(destX, destY);
-            } else if (destX != startX && spaces[destX][destY] == 0) {
-                // en passant
-                spaces[destX][startY] = 0;
-            } else if (destY == 0 || destY == SIZE - 1) {
-                // pawn promotion
-                spaces[destX][destY] = (whiteTurn ? Character.toUpperCase(promoteTo) : Character.toLowerCase(promoteTo));
-            }
-        }
-
-        whiteTurn = !whiteTurn;
-        updateAttack();
-
-        return true;
     }
 
     /**
@@ -220,8 +224,8 @@ public class Board {
      */
     public boolean isValidMove(int startX, int startY, int destX, int destY) {
 
-        if (spaces[startX][startY] == 0 ||
-                whiteTurn != Character.isUpperCase(spaces[startX][startY])) {
+        if (spaces[startX][startY] == 0
+                || whiteTurn != Character.isUpperCase(spaces[startX][startY])) {
             return false;
         }
 
@@ -242,14 +246,14 @@ public class Board {
             int destY = pmSquare[1];
 
             char[][] temp = new char[SIZE][];
-            for(int x = 0; x < SIZE; x++) {
+            for (int x = 0; x < SIZE; x++) {
                 temp[x] = spaces[x].clone();
             }
 
             temp[destX][destY] = temp[startX][startY];
             temp[startX][startY] = 0;
-            if (Character.toLowerCase(temp[destX][destY]) == 'p' &&
-                    destX != startX && temp[destX][destY] == 0) {
+            if (Character.toLowerCase(temp[destX][destY]) == 'p'
+                    && destX != startX && temp[destX][destY] == 0) {
                 // en passant
                 temp[destX][startY] = 0;
             }
@@ -263,8 +267,8 @@ public class Board {
                     }
 
                     Set<Integer> moves;
-                    if (whiteTurn != Character.isUpperCase(temp[x][y]) &&
-                            (moves = getPossibleMoves(x, y)) != null) {
+                    if (whiteTurn != Character.isUpperCase(temp[x][y])
+                            && (moves = getPossibleMoves(x, y)) != null) {
                         attacked.addAll(moves);
                     }
                 }
@@ -280,17 +284,17 @@ public class Board {
     private Set<Integer> getPossibleMoves(int x, int y) {
         switch (Character.toLowerCase(spaces[x][y])) {
             case 'p':
-                return getPossiblePawnMoves(x,y);
+                return getPossiblePawnMoves(x, y);
             case 'r':
-                return getPossibleRookMoves(x,y);
+                return getPossibleRookMoves(x, y);
             case 'n':
-                return getPossibleKnightMoves(x,y);
+                return getPossibleKnightMoves(x, y);
             case 'b':
-                return getPossibleBishopMoves(x,y);
+                return getPossibleBishopMoves(x, y);
             case 'q':
-                return getPossibleQueenMoves(x,y);
+                return getPossibleQueenMoves(x, y);
             case 'k':
-                return getPossibleKingMoves(x,y);
+                return getPossibleKingMoves(x, y);
         }
         return null;
     }
@@ -303,15 +307,15 @@ public class Board {
         if (onBoard(x, currY) && spaces[x][currY] == 0) {
             possibleMoves.add(squareToInteger(x, currY));
         }
-        if (possibleMoves.size() > 0 && y == startY && spaces[x][y + 2*dy] == 0) {
+        if (possibleMoves.size() > 0 && y == startY && spaces[x][y + 2 * dy] == 0) {
             possibleMoves.add(squareToInteger(x, currY + dy));
         }
 
         for (int dx = -1; dx <= 1; dx += 2) {
             int currX = x + dx;
-            if (onBoard(currX, currY) &&
-                    ((spaces[currX][currY] != 0 && whiteTurn != Character.isUpperCase(spaces[currX][currY])) ||
-                    (spaces[currX][currY] == 0 && squareToInteger(currX, y) == enPassant))) {
+            if (onBoard(currX, currY)
+                    && ((spaces[currX][currY] != 0 && whiteTurn != Character.isUpperCase(spaces[currX][currY]))
+                    || (spaces[currX][currY] == 0 && squareToInteger(currX, y) == enPassant))) {
                 possibleMoves.add(squareToInteger(currX, currY));
             }
         }
@@ -325,8 +329,8 @@ public class Board {
                 if (dx != dy && dx != 0 && dy != 0 && dx + dy != 0) {
                     int currX = x + dx;
                     int currY = y + dy;
-                    if (onBoard(currX, currY) && (spaces[currX][currY] == 0 ||
-                            whiteTurn != Character.isUpperCase(spaces[currX][currY]))) {
+                    if (onBoard(currX, currY) && (spaces[currX][currY] == 0
+                            || whiteTurn != Character.isUpperCase(spaces[currX][currY]))) {
                         possibleMoves.add(squareToInteger(currX, currY));
                     }
                 }
@@ -352,9 +356,9 @@ public class Board {
         Set<Integer> possibleMoves = new HashSet<>();
         for (int dx = -1; dx <= 1; dx++) {
             for (int dy = -1; dy <= 1; dy++) {
-                if ((dx != 0 || dy != 0) &&
-                        ((isBishop && Math.abs(dx) == Math.abs(dy)) ||
-                        (isRook && Math.abs(dx) != Math.abs(dy)))) {
+                if ((dx != 0 || dy != 0)
+                        && ((isBishop && Math.abs(dx) == Math.abs(dy))
+                        || (isRook && Math.abs(dx) != Math.abs(dy)))) {
                     int currX = x;
                     int currY = y;
                     boolean stop = false;
@@ -386,10 +390,10 @@ public class Board {
             for (int dy = -1; dy <= 1; dy++) {
                 int currX = x + dx;
                 int currY = y + dy;
-                if ((dx != 0 || dy != 0) &&
-                        onBoard(currX, currY) &&
-                        (spaces[currX][currY] == 0 ||
-                        whiteTurn != Character.isUpperCase(spaces[currX][currY]))) {
+                if ((dx != 0 || dy != 0)
+                        && onBoard(currX, currY)
+                        && (spaces[currX][currY] == 0
+                        || whiteTurn != Character.isUpperCase(spaces[currX][currY]))) {
                     possibleMoves.add(squareToInteger(currX, currY));
                 }
             }
@@ -401,25 +405,27 @@ public class Board {
         boolean castleK = !kingInCheck && (whiteTurn ? castleWK : castleBK);
         boolean castleQ = !kingInCheck && (whiteTurn ? castleWQ : castleBQ);
 
-        for (int currX = x + 1; castleK && currX < SIZE-1; currX++) {
-            if (spaces[currX][y] != 0 ||
-                    (currX - x <= 2 && attacked.contains(squareToInteger(currX, y)))) {
+        for (int currX = x + 1; castleK && currX < SIZE - 1; currX++) {
+            if (spaces[currX][y] != 0
+                    || (currX - x <= 2
+                    && attacked.contains(squareToInteger(currX, y)))) {
                 castleK = false;
             }
         }
 
         for (int currX = x - 1; castleQ && currX > 0; currX--) {
-            if (spaces[currX][y] != 0 ||
-                    (x - currX <= 2 && attacked.contains(squareToInteger(currX, y)))) {
+            if (spaces[currX][y] != 0
+                    || (x - currX <= 2
+                    && attacked.contains(squareToInteger(currX, y)))) {
                 castleQ = false;
             }
         }
 
         if (castleK) {
-            possibleMoves.add(squareToInteger(x+2, y));
+            possibleMoves.add(squareToInteger(x + 2, y));
         }
         if (castleQ) {
-            possibleMoves.add(squareToInteger(x-2, y));
+            possibleMoves.add(squareToInteger(x - 2, y));
         }
 
         return possibleMoves;

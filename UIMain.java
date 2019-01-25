@@ -3,29 +3,11 @@ import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.event.*;
 import java.awt.Image;
-import java.lang.StringBuilder;
 import java.util.ArrayList;
 import java.util.Random;
-
 import javax.swing.*;
 
-import javafx.scene.control.Button;
-
-class ClickListener implements ActionListener {
-
-    public static JButton lastPressed;
-
-    public void actionPerformed(ActionEvent e) {
-        if (UIMain.startColor == UIMain.b.getTurn()) {
-            JButton curr = (JButton) e.getSource();
-            lastPressed = curr;
-            UIMain.takeTurn();
-        }
-        //curr.setText("LMAO");
-    }
-}
-
-class UIMain extends JFrame {
+class UiMain extends JFrame {
 
     public static Board b;
     public static JButton[][] buttonArr;
@@ -37,7 +19,7 @@ class UIMain extends JFrame {
     public static JFrame f;
 
     // Constructor:
-    public UIMain() {
+    public UiMain() {
         setTitle("Incognito Chess");
         setSize(960, 960);
         setLocation(200, 50);
@@ -86,9 +68,9 @@ class UIMain extends JFrame {
     }
 
     public static void startgame() {
-        System.out.println("You are: " + (startColor ? "White":"Black"));
+        System.out.println("You are: " + (startColor ? "White" : "Black"));
 
-        f = new UIMain();
+        f = new UiMain();
         f.setResizable(false);
 
         Container contentPane = f.getContentPane();
@@ -104,7 +86,7 @@ class UIMain extends JFrame {
                 if (startColor) {
                     c = b.getBoard()[j][i];
                 } else {
-                    c = b.getBoard()[7-j][7-i];
+                    c = b.getBoard()[7 - j][7 - i];
                 }
                 ImageIcon icon = new ImageIcon(getImageFile(c));
                 Image piece = icon.getImage();
@@ -116,7 +98,7 @@ class UIMain extends JFrame {
                 if (startColor) {
                     square.setActionCommand(j + " " + i);
                 } else {
-                    square.setActionCommand((7-j) + " " + (7-i));
+                    square.setActionCommand((7 - j) + " " + (7 - i));
                 }
                 square.setFocusPainted(false);
                 square.setRolloverEnabled(true);
@@ -125,7 +107,7 @@ class UIMain extends JFrame {
                 if (startColor) {
                     buttonArr[j][i] = square;
                 } else {
-                    buttonArr[7-j][7-i] = square;
+                    buttonArr[7 - j][7 - i] = square;
                 }
 
                 if (i % 2 == j % 2) {
@@ -181,14 +163,14 @@ class UIMain extends JFrame {
     }
 
     public static void refreshBoard() {
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
+        for (int i = 0; i < Board.SIZE; i++) {
+            for (int j = 0; j < Board.SIZE; j++) {
 
                 char c;
                 if (startColor) {
                     c = b.getBoard()[i][j];
                 } else {
-                    c = b.getBoard()[7-i][7-j];
+                    c = b.getBoard()[7 - i][7 - j];
                 }
                 ImageIcon icon = new ImageIcon(getImageFile(c));
                 Image piece = icon.getImage();
@@ -197,7 +179,7 @@ class UIMain extends JFrame {
                 if (startColor) {
                     buttonArr[i][j].setIcon(icon);
                 } else {
-                    buttonArr[7-i][7-j].setIcon(icon);
+                    buttonArr[7 - i][7 - j].setIcon(icon);
                 }
 
             }
@@ -207,10 +189,7 @@ class UIMain extends JFrame {
     public static char getPromotionPiece() {
         // TODO: make popup to ask if player wants Knight, Bishop, Rook, or Queen
 
-        Object[] options = {"Queen",
-                    "Rook",
-                    "Bishop",
-                    "Knight"};
+        Object[] options = {"Queen", "Rook", "Bishop", "Knight"};
 
         int chosen = -1;
 
@@ -243,5 +222,19 @@ class UIMain extends JFrame {
         s.insert(7, (Character.isUpperCase(c) ? 'w' : 'b'));
         s.insert(8, Character.toLowerCase(c));
         return s.toString();
+    }
+
+    class ClickListener implements ActionListener {
+
+        public static JButton lastPressed;
+    
+        public void actionPerformed(ActionEvent e) {
+            if (UiMain.startColor == UiMain.b.getTurn()) {
+                JButton curr = (JButton) e.getSource();
+                lastPressed = curr;
+                UiMain.takeTurn();
+            }
+            //curr.setText("LMAO");
+        }
     }
 }
