@@ -223,18 +223,18 @@ class UiMain extends JFrame {
         s.insert(8, Character.toLowerCase(c));
         return s.toString();
     }
+}
 
-    class ClickListener implements ActionListener {
+class ClickListener implements ActionListener {
 
-        public static JButton lastPressed;
-    
-        public void actionPerformed(ActionEvent e) {
-            if (UiMain.startColor == UiMain.b.getTurn()) {
-                JButton curr = (JButton) e.getSource();
-                lastPressed = curr;
-                UiMain.takeTurn();
-            }
-            //curr.setText("LMAO");
+    public static JButton lastPressed;
+
+    public void actionPerformed(ActionEvent e) {
+        if (UiMain.startColor == UiMain.b.getTurn()) {
+            JButton curr = (JButton) e.getSource();
+            lastPressed = curr;
+            UiMain.takeTurn();
         }
+        //curr.setText("LMAO");
     }
 }
