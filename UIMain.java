@@ -18,11 +18,15 @@ class UiMain extends JFrame {
     public static boolean startColor;
     public static JFrame f;
 
-    // Constructor:
+    private static final int WINDOW_WIDTH = 960;
+    private static final int WINDOW_HEIGHT = 960;
+    private static final int WINDOW_START_X = 200;
+    private static final int WINDOW_START_Y = 50;
+
     public UiMain() {
         setTitle("Incognito Chess");
-        setSize(960, 960);
-        setLocation(200, 50);
+        setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+        setLocation(WINDOW_START_X, WINDOW_START_Y);
 
         // Window Listeners
         addWindowListener(new WindowAdapter() {
@@ -76,17 +80,17 @@ class UiMain extends JFrame {
         Container contentPane = f.getContentPane();
         JPanel chessPanel = new JPanel(new GridLayout(8, 8));
 
-        buttonArr = new JButton[8][8];
+        buttonArr = new JButton[Board.SIZE][Board.SIZE];
 
         for (int i = 7; i >= 0; i--) {
-            for (int j = 0; j < 8; j++) {
+            for (int j = 0; j < Board.SIZE; j++) {
                 //Icon warnIcon = new ImageIcon("pawn.png");
                 JButton square = new JButton();
                 char c;
                 if (startColor) {
                     c = b.getBoard()[j][i];
                 } else {
-                    c = b.getBoard()[7 - j][7 - i];
+                    c = b.getBoard()[Board.SIZE - 1 - j][Board.SIZE - 1 - i];
                 }
                 ImageIcon icon = new ImageIcon(getImageFile(c));
                 Image piece = icon.getImage();
@@ -98,7 +102,7 @@ class UiMain extends JFrame {
                 if (startColor) {
                     square.setActionCommand(j + " " + i);
                 } else {
-                    square.setActionCommand((7 - j) + " " + (7 - i));
+                    square.setActionCommand((Board.SIZE - 1 - j) + " " + (Board.SIZE - 1 - i));
                 }
                 square.setFocusPainted(false);
                 square.setRolloverEnabled(true);
@@ -107,7 +111,7 @@ class UiMain extends JFrame {
                 if (startColor) {
                     buttonArr[j][i] = square;
                 } else {
-                    buttonArr[7 - j][7 - i] = square;
+                    buttonArr[Board.SIZE - 1 - j][Board.SIZE - 1 - i] = square;
                 }
 
                 if (i % 2 == j % 2) {
@@ -170,7 +174,7 @@ class UiMain extends JFrame {
                 if (startColor) {
                     c = b.getBoard()[i][j];
                 } else {
-                    c = b.getBoard()[7 - i][7 - j];
+                    c = b.getBoard()[Board.SIZE - 1 - i][Board.SIZE - 1 - j];
                 }
                 ImageIcon icon = new ImageIcon(getImageFile(c));
                 Image piece = icon.getImage();
@@ -179,7 +183,7 @@ class UiMain extends JFrame {
                 if (startColor) {
                     buttonArr[i][j].setIcon(icon);
                 } else {
-                    buttonArr[7 - i][7 - j].setIcon(icon);
+                    buttonArr[Board.SIZE - 1 - i][Board.SIZE - 1 - j].setIcon(icon);
                 }
 
             }
@@ -187,8 +191,6 @@ class UiMain extends JFrame {
     }
 
     public static char getPromotionPiece() {
-        // TODO: make popup to ask if player wants Knight, Bishop, Rook, or Queen
-
         Object[] options = {"Queen", "Rook", "Bishop", "Knight"};
 
         int chosen = -1;
@@ -204,16 +206,11 @@ class UiMain extends JFrame {
                 options[0]);
         }
 
-        if (chosen == 0) {
-            return 'Q';
-        } else if (chosen == 1) {
-            return 'R';
-        } else if (chosen == 2) {
-            return 'B';
-        } else if (chosen == 3) {
-            return 'k';
+        switch (chosen) {
+            case 1: return 'R';
+            case 2: return 'B';
+            case 3: return 'K';
         }
-
         return 'Q';
     }
 
