@@ -9,13 +9,13 @@ import javax.swing.*;
 
 class UiMain extends JFrame {
 
-    private static Board b;
+     static Board b;
     private static JButton[][] buttonArr;
     private static ArrayList<JButton> presses = new ArrayList<>();
-    static Server server;
-    static Client client;
+    private static Server server;
+    private static Client client;
     private static long currentval;
-    private static boolean startColor;
+    static boolean startColor;
     private static JFrame f;
 
     private static final int WINDOW_WIDTH = 960;
