@@ -1,9 +1,11 @@
+import com.sun.istack.internal.NotNull;
+
 import java.util.HashSet;
 import java.util.Set;
 
 public class Board {
 
-    public static final int SIZE = 8;
+    static final int SIZE = 8;
 
     private char[][] spaces = new char[SIZE][SIZE];
     private boolean whiteTurn;
@@ -13,7 +15,7 @@ public class Board {
     private boolean whiteInCheck, blackInCheck;
     private int movesSincePawnOrCapture;
 
-    public Board() {
+    Board() {
         setupBoard();
         whiteTurn = true;
         castleWK = true;
@@ -48,19 +50,19 @@ public class Board {
         }
     }
 
-    public char[][] getBoard() {
+    char[][] getBoard() {
         return spaces;
     }
 
-    public boolean getTurn() {
+    boolean getTurn() {
         return whiteTurn;
     }
 
-    public void setTurn(boolean turn) {
-        whiteTurn = turn;
+    private void toggleTurn() {
+        whiteTurn = !whiteTurn;
     }
 
-    public int squareToInteger(int x, int y) {
+    private int squareToInteger(int x, int y) {
         if (x < SIZE && y < SIZE) {
             return x * SIZE + y;
         }
@@ -74,17 +76,16 @@ public class Board {
         return -1;
     }
 
-    public int[] integerToSquare(int i) {
-        int[] square = {i / SIZE, i % SIZE};
-        return square;
+    private int[] integerToSquare(int i) {
+        return new int[]{i / SIZE, i % SIZE};
     }
 
-    public boolean onBoard(int x, int y) {
+    private boolean onBoard(int x, int y) {
         return 0 <= x && x < SIZE
-            && 0 <= y && y < SIZE;
+                && 0 <= y && y < SIZE;
     }
 
-    public GameStatus getGameStatus() {
+    GameStatus getGameStatus() {
 
         // If there exist possible moves for the current color then the game is
         // either drawn by the 50 move rule or is still in progress
@@ -108,7 +109,7 @@ public class Board {
         return GameStatus.STALEMATE;
     }
 
-    public void updateAttack() {
+    private void updateAttack() {
         int whiteKing = -1;
         int blackKing = -1;
         whiteAttack = new HashSet<>();
@@ -139,11 +140,11 @@ public class Board {
         blackInCheck = whiteAttack.contains(blackKing);
     }
 
-    public boolean doesPromote(int startX, int startY, int destX, int destY) {
+    boolean doesPromote(int startX, int startY, int destX, int destY) {
         return (Character.toLowerCase(spaces[destX][destY]) == 'p') && (destY == 0 || destY == SIZE - 1);
     }
 
-    public boolean move(int startX, int startY, int destX, int destY) {
+    boolean move(int startX, int startY, int destX, int destY) {
         return move(startX, startY, destX, destY, 'Q');
     }
 
@@ -151,10 +152,10 @@ public class Board {
      * Makes the move of the piece from (startX, startY) to (destX, destY) and
      * then promotes the piece to promoteTo if it is a pawn that has reached the
      * other end. Only does the move if it is valid
-     * 
+     *
      * @return boolean if the move was valid and thus changed the board
      */
-    public boolean move(int startX, int startY, int destX, int destY, char promoteTo) {
+    boolean move(int startX, int startY, int destX, int destY, char promoteTo) {
         // Check for validity
         if (!isValidMove(startX, startY, destX, destY)) {
             return false;
@@ -192,7 +193,7 @@ public class Board {
             }
         }
 
-        whiteTurn = !whiteTurn;
+        toggleTurn();
         updateAttack();
         return true;
     }
@@ -222,7 +223,7 @@ public class Board {
     /**
      * @return boolean if the piece can go from (startX, startY) to (destX, destY)
      */
-    public boolean isValidMove(int startX, int startY, int destX, int destY) {
+    private boolean isValidMove(int startX, int startY, int destX, int destY) {
 
         if (spaces[startX][startY] == 0
                 || whiteTurn != Character.isUpperCase(spaces[startX][startY])) {
@@ -234,7 +235,7 @@ public class Board {
 
     /**
      * @return Set<Integer> a nonnull set of integers corresponding to the
-     *         squares that the starting square can legally go to
+     * squares that the starting square can legally go to
      */
     private Set<Integer> getLegalMoves(int startX, int startY) {
         Set<Integer> possibleMoves = getPossibleMoves(startX, startY);
@@ -250,29 +251,35 @@ public class Board {
                 temp[x] = spaces[x].clone();
             }
 
-            temp[destX][destY] = temp[startX][startY];
-            temp[startX][startY] = 0;
-            if (Character.toLowerCase(temp[destX][destY]) == 'p'
-                    && destX != startX && temp[destX][destY] == 0) {
+            spaces[destX][destY] = spaces[startX][startY];
+            spaces[startX][startY] = 0;
+            if (Character.toLowerCase(spaces[destX][destY]) == 'p'
+                    && destX != startX && spaces[destX][destY] == 0) {
                 // en passant
-                temp[destX][startY] = 0;
+                spaces[destX][startY] = 0;
             }
 
             int king = -1;
             Set<Integer> attacked = new HashSet<>();
             for (int x = 0; x < SIZE; x++) {
                 for (int y = 0; y < SIZE; y++) {
-                    if (temp[x][y] == (whiteTurn ? 'K' : 'k')) {
+                    if (spaces[x][y] == (whiteTurn ? 'K' : 'k')) {
                         king = squareToInteger(x, y);
                     }
 
                     Set<Integer> moves;
-                    if (whiteTurn != Character.isUpperCase(temp[x][y])
+                    if (Character.isLetter(spaces[x][y])
+                            && whiteTurn != Character.isUpperCase(spaces[x][y])
                             && (moves = getPossibleMoves(x, y)) != null) {
                         attacked.addAll(moves);
                     }
                 }
             }
+
+            for (int x = 0; x < SIZE; x++) {
+                spaces[x] = temp[x].clone();
+            }
+
             if (!attacked.contains(king)) {
                 legalMoves.add(pm);
             }
@@ -281,6 +288,7 @@ public class Board {
     }
 
 
+    @NotNull
     private Set<Integer> getPossibleMoves(int x, int y) {
         switch (Character.toLowerCase(spaces[x][y])) {
             case 'p':
@@ -336,7 +344,7 @@ public class Board {
                 }
 
             }
-}
+        }
         return possibleMoves;
     }
 
@@ -370,7 +378,7 @@ public class Board {
                                 possibleMoves.add(squareToInteger(currX, currY));
                             } else {
                                 stop = true;
-                                if (whiteTurn != Character.isUpperCase(spaces[currX][currY])) {
+                                if (Character.isUpperCase(spaces[x][y]) != Character.isUpperCase(spaces[currX][currY])) {
                                     possibleMoves.add(squareToInteger(currX, currY));
                                 }
                             }

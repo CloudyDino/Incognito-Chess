@@ -9,21 +9,21 @@ import javax.swing.*;
 
 class UiMain extends JFrame {
 
-    public static Board b;
-    public static JButton[][] buttonArr;
-    public static ArrayList<JButton> presses = new ArrayList<>();
+    private static Board b;
+    private static JButton[][] buttonArr;
+    private static ArrayList<JButton> presses = new ArrayList<>();
     static Server server;
     static Client client;
-    public static long currentval;
-    public static boolean startColor;
-    public static JFrame f;
+    private static long currentval;
+    private static boolean startColor;
+    private static JFrame f;
 
     private static final int WINDOW_WIDTH = 960;
     private static final int WINDOW_HEIGHT = 960;
     private static final int WINDOW_START_X = 200;
     private static final int WINDOW_START_Y = 50;
 
-    public UiMain() {
+    private UiMain() {
         setTitle("Incognito Chess");
         setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         setLocation(WINDOW_START_X, WINDOW_START_Y);
@@ -54,24 +54,20 @@ class UiMain extends JFrame {
         serverThread.start();
     }
 
-    public static void initHandshake() {
+    static void initHandshake() {
         client.sendLong(currentval);
     }
 
-    public static boolean handshake(long l) {
+    static boolean handshake(long l) {
         if (currentval == l) {
             initHandshake();
             return false;
-        } else if (currentval > l) {
-            startColor = true;
-        } else {
-            startColor = false;
         }
-
+        startColor = currentval > l;
         return true;
     }
 
-    public static void startgame() {
+    static void startgame() {
         System.out.println("You are: " + (startColor ? "White" : "Black"));
 
         f = new UiMain();
@@ -84,7 +80,6 @@ class UiMain extends JFrame {
 
         for (int i = 7; i >= 0; i--) {
             for (int j = 0; j < Board.SIZE; j++) {
-                //Icon warnIcon = new ImageIcon("pawn.png");
                 JButton square = new JButton();
                 char c;
                 if (startColor) {
@@ -92,10 +87,7 @@ class UiMain extends JFrame {
                 } else {
                     c = b.getBoard()[Board.SIZE - 1 - j][Board.SIZE - 1 - i];
                 }
-                ImageIcon icon = new ImageIcon(getImageFile(c));
-                Image piece = icon.getImage();
-                Image newimg = piece.getScaledInstance(120, 120,  java.awt.Image.SCALE_SMOOTH);
-                icon = new ImageIcon(newimg);
+                ImageIcon icon = getIcon(c);
                 square.setIcon(icon);
 
                 square.addActionListener(new ClickListener());
@@ -124,11 +116,10 @@ class UiMain extends JFrame {
         }
 
         contentPane.add(chessPanel);
-
         f.setVisible(true);
     }
 
-    public static void takeTurn() {
+    static void takeTurn() {
         presses.add(ClickListener.lastPressed);
 
         if (presses.size() >= 2) {
@@ -147,26 +138,22 @@ class UiMain extends JFrame {
 
             int[] sending = {startX, startY, endX, endY};
 
-            boolean check = b.move(startX, startY, endX, endY, promotion);
-
-            if (check) {
+            boolean moveIsLegal = b.move(startX, startY, endX, endY, promotion);
+            if (moveIsLegal) {
                 refreshBoard();
-
-                presses.clear();
                 client.sendMove(sending, promotion);
-            } else {
-                presses.clear();
             }
+
+            presses.clear();
         }
     }
 
-    public static void recieveMove(int[] move, char promotion) {
+    static void recieveMove(int[] move, char promotion) {
         b.move(move[0], move[1], move[2], move[3], promotion);
-
         refreshBoard();
     }
 
-    public static void refreshBoard() {
+    private static void refreshBoard() {
         for (int i = 0; i < Board.SIZE; i++) {
             for (int j = 0; j < Board.SIZE; j++) {
 
@@ -176,10 +163,7 @@ class UiMain extends JFrame {
                 } else {
                     c = b.getBoard()[Board.SIZE - 1 - i][Board.SIZE - 1 - j];
                 }
-                ImageIcon icon = new ImageIcon(getImageFile(c));
-                Image piece = icon.getImage();
-                Image newimg = piece.getScaledInstance(120, 120,  java.awt.Image.SCALE_SMOOTH);
-                icon = new ImageIcon(newimg);
+                ImageIcon icon = getIcon(c);
                 if (startColor) {
                     buttonArr[i][j].setIcon(icon);
                 } else {
@@ -190,7 +174,7 @@ class UiMain extends JFrame {
         }
     }
 
-    public static char getPromotionPiece() {
+    private static char getPromotionPiece() {
         Object[] options = {"Queen", "Rook", "Bishop", "Knight"};
 
         int chosen = -1;
@@ -214,6 +198,13 @@ class UiMain extends JFrame {
         return 'Q';
     }
 
+    private static ImageIcon getIcon(char c) {
+        ImageIcon icon = new ImageIcon(getImageFile(c));
+        Image piece = icon.getImage();
+        Image newimg = piece.getScaledInstance(120, 120,  Image.SCALE_SMOOTH);
+        return new ImageIcon(newimg);
+    }
+
     private static String getImageFile(char c) {
         StringBuilder s = new StringBuilder("pieces/.png");
         s.insert(7, (Character.isUpperCase(c) ? 'w' : 'b'));
@@ -224,14 +215,12 @@ class UiMain extends JFrame {
 
 class ClickListener implements ActionListener {
 
-    public static JButton lastPressed;
+    static JButton lastPressed;
 
     public void actionPerformed(ActionEvent e) {
         if (UiMain.startColor == UiMain.b.getTurn()) {
-            JButton curr = (JButton) e.getSource();
-            lastPressed = curr;
+            lastPressed = (JButton) e.getSource();
             UiMain.takeTurn();
         }
-        //curr.setText("LMAO");
     }
 }

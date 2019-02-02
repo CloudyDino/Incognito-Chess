@@ -24,7 +24,7 @@ public class AsciiChess {
         in.close();
     }
 
-    public static void printBoard(Board board) {
+     static void printBoard(Board board) {
         char[][] arr = board.getBoard();
 
         System.out.println("Turn: " + (board.getTurn() ? "White" : "Black"));
