@@ -141,7 +141,7 @@ public class Board {
     }
 
     boolean doesPromote(int startX, int startY, int destX, int destY) {
-        return (Character.toLowerCase(spaces[destX][destY]) == 'p') && (destY == 0 || destY == SIZE - 1);
+        return (Character.toLowerCase(spaces[startX][startY]) == 'p') && (destY == 0 || destY == SIZE - 1);
     }
 
     boolean move(int startX, int startY, int destX, int destY) {
