@@ -14,8 +14,9 @@ class UiMain extends JFrame {
     private static ArrayList<JButton> presses = new ArrayList<>();
     private static Server server;
     private static Client client;
-    private static long currentval;
+    private static long startColorSeed;
     static boolean startColor;
+    static boolean localGame;
     private static JFrame f;
 
     private static final int WINDOW_WIDTH = 960;
@@ -31,8 +32,10 @@ class UiMain extends JFrame {
         // Window Listeners
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                client.disconnect();
-                server.disconnect();
+                if (!localGame) {
+                    client.disconnect();
+                    server.disconnect();
+                }
                 System.exit(0);
             }
         });
@@ -41,29 +44,34 @@ class UiMain extends JFrame {
     public static void main(String[] args) {
         b = new Board();
 
-        currentval = (new Random()).nextLong();
+        localGame = args.length == 0;
 
-        client = new Client(args[0], 5000);
+        if (localGame) {
+            startColor = true;
+            startgame();
+        } else {
+            startColorSeed = (new Random()).nextLong();
 
-        Thread clientThread = new Thread(client);
-        clientThread.start();
+            client = new Client(args[0], 5000);
+            Thread clientThread = new Thread(client);
+            clientThread.start();
 
-        server = new Server(5000);
-
-        Thread serverThread = new Thread(server);
-        serverThread.start();
+            server = new Server(5000);
+            Thread serverThread = new Thread(server);
+            serverThread.start();
+        }
     }
 
     static void initHandshake() {
-        client.sendLong(currentval);
+        client.sendLong(startColorSeed);
     }
 
     static boolean handshake(long l) {
-        if (currentval == l) {
+        if (startColorSeed == l) {
             initHandshake();
             return false;
         }
-        startColor = currentval > l;
+        startColor = startColorSeed > l;
         return true;
     }
 
@@ -141,7 +149,9 @@ class UiMain extends JFrame {
             boolean moveIsLegal = b.move(startX, startY, endX, endY, promotion);
             if (moveIsLegal) {
                 refreshBoard();
-                client.sendMove(sending, promotion);
+                if (!localGame) {
+                    client.sendMove(sending, promotion);
+                }
             }
 
             presses.clear();
@@ -218,7 +228,7 @@ class ClickListener implements ActionListener {
     static JButton lastPressed;
 
     public void actionPerformed(ActionEvent e) {
-        if (UiMain.startColor == UiMain.b.getTurn()) {
+        if (UiMain.localGame || UiMain.startColor == UiMain.b.getTurn()) {
             lastPressed = (JButton) e.getSource();
             UiMain.takeTurn();
         }
