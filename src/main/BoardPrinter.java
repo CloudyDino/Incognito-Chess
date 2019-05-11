@@ -1,3 +1,5 @@
+package main;
+
 abstract class BoardPrinter {
 
     protected Board board;

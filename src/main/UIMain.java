@@ -1,3 +1,5 @@
+package main;
+
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.GridLayout;
@@ -158,7 +160,7 @@ class UiMain extends JFrame {
         }
     }
 
-    static void recieveMove(int[] move, char promotion) {
+    static void receiveMove(int[] move, char promotion) {
         b.move(move[0], move[1], move[2], move[3], promotion);
         refreshBoard();
     }

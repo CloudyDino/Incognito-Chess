@@ -1,3 +1,5 @@
+package main;
+
 public class AsciiPrinter extends BoardPrinter {
 
     AsciiPrinter(Board board) {

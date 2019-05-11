@@ -1,3 +1,5 @@
+package main;
+
 public class UnicodePrinter extends BoardPrinter {
 
     UnicodePrinter(Board board) {

@@ -1,3 +1,5 @@
+package main;
+
 import java.net.*;
 import java.io.*;
 
@@ -17,11 +19,11 @@ public class Server implements Runnable {
         // starts server and waits for a connection
         try {
             server = new ServerSocket(port);
-            System.out.println("Server started");
+            System.out.println("main.Server started");
             System.out.println("Waiting for a client ...");
 
             socket = server.accept();
-            System.out.println("Client accepted");
+            System.out.println("main.Client accepted");
 
             // takes input from the client socket
             in = new DataInputStream(
@@ -62,7 +64,7 @@ public class Server implements Runnable {
 
                 System.out.printf("Received:\t(%d, %d) to (%d, %d) - %c%n", move[0], move[1], move[2], move[3], promotion);
 
-                UiMain.recieveMove(move, promotion);
+                UiMain.receiveMove(move, promotion);
             }
         } catch (IOException e) {
             e.printStackTrace();
