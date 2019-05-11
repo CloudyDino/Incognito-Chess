@@ -26,6 +26,9 @@ class UiMain extends JFrame {
     private static final int WINDOW_START_X = 200;
     private static final int WINDOW_START_Y = 50;
 
+    private static final String IMAGES_FOLDER = "res";
+    private static final String IMAGES_FILETYPE = "png";
+
     private UiMain() {
         setTitle("Incognito Chess");
         setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -210,18 +213,17 @@ class UiMain extends JFrame {
         return 'Q';
     }
 
-    private static ImageIcon getIcon(char c) {
-        ImageIcon icon = new ImageIcon(getImageFile(c));
-        Image piece = icon.getImage();
-        Image newimg = piece.getScaledInstance(120, 120,  Image.SCALE_SMOOTH);
-        return new ImageIcon(newimg);
+    private static ImageIcon getIcon(char piece) {
+        ImageIcon icon = new ImageIcon(getImageFile(piece));
+        Image image = icon.getImage();
+        Image smoothImage = image.getScaledInstance(120, 120,  Image.SCALE_SMOOTH);
+        return new ImageIcon(smoothImage);
     }
 
-    private static String getImageFile(char c) {
-        StringBuilder s = new StringBuilder("pieces/.png");
-        s.insert(7, (Character.isUpperCase(c) ? 'w' : 'b'));
-        s.insert(8, Character.toLowerCase(c));
-        return s.toString();
+    private static String getImageFile(char piece) {
+        char color = Character.isUpperCase(piece) ? 'w' : 'b';
+        char pieceLowerCase = Character.toLowerCase(piece);
+        return String.format("%s/%s%s.%s", IMAGES_FOLDER, color, pieceLowerCase, IMAGES_FILETYPE);
     }
 }
 
