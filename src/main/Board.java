@@ -88,7 +88,6 @@ public class Board {
     }
 
     GameStatus getGameStatus() {
-
         // If there exist possible moves for the current color then the game is
         // either drawn by the 50 move rule or is still in progress
         for (int x = 0; x < SIZE; x++) {
@@ -142,7 +141,7 @@ public class Board {
         blackInCheck = whiteAttack.contains(blackKing);
     }
 
-    boolean doesPromote(int startX, int startY, int destX, int destY) {
+    boolean doesPromote(int startX, int startY, int destY) {
         return (Character.toLowerCase(spaces[startX][startY]) == 'p') && (destY == 0 || destY == SIZE - 1);
     }
 
@@ -171,16 +170,16 @@ public class Board {
         if (spaces[destX][destY] != 0) {
             movesSincePawnOrCapture = 0;
         }
-        spaces[destX][destY] = spaces[startX][startY];
-        spaces[startX][startY] = 0;
 
-        if (Character.toLowerCase(spaces[destX][destY]) == 'k' && Math.abs(startX - destX) == 2) {
+        Piece piece = Piece.fromChar(spaces[startX][startY]);
+
+        if (piece == Piece.KING && Math.abs(startX - destX) == 2) {
             // castle
             int rookX = (startX > destX ? 0 : SIZE - 1);
             spaces[(startX + destX) / 2][startY] = spaces[rookX][startY];
             spaces[rookX][startY] = 0;
 
-        } else if (Character.toLowerCase(spaces[destX][destY]) == 'p') {
+        } else if (piece == Piece.PAWN) {
             movesSincePawnOrCapture = 0;
             if (Math.abs(startY - destY) == 2) {
                 // moved two spaces
@@ -190,10 +189,13 @@ public class Board {
                 spaces[destX][startY] = 0;
             } else if (destY == 0 || destY == SIZE - 1) {
                 // pawn promotion
-                spaces[destX][destY] = (whiteTurn ? Character.toUpperCase(promoteTo)
+                spaces[startX][startY] = (whiteTurn ? Character.toUpperCase(promoteTo)
                         : Character.toLowerCase(promoteTo));
             }
         }
+
+        spaces[destX][destY] = spaces[startX][startY];
+        spaces[startX][startY] = 0;
 
         toggleTurn();
         updateAttack();
@@ -253,13 +255,15 @@ public class Board {
                 temp[x] = spaces[x].clone();
             }
 
-            spaces[destX][destY] = spaces[startX][startY];
-            spaces[startX][startY] = 0;
-            if (Character.toLowerCase(spaces[destX][destY]) == 'p'
-                    && destX != startX && spaces[destX][destY] == 0) {
+            if (Piece.fromChar(spaces[startX][startY]) == Piece.PAWN
+                    && destX != startX
+                    && spaces[destX][destY] == 0) {
                 // en passant
                 spaces[destX][startY] = 0;
             }
+
+            spaces[destX][destY] = spaces[startX][startY];
+            spaces[startX][startY] = 0;
 
             int king = -1;
             Set<Integer> attacked = new HashSet<>();
@@ -292,18 +296,18 @@ public class Board {
 
     @NotNull
     private Set<Integer> getPossibleMoves(int x, int y) {
-        switch (Character.toLowerCase(spaces[x][y])) {
-            case 'p':
+        switch (Piece.fromChar(spaces[x][y])) {
+            case PAWN:
                 return getPossiblePawnMoves(x, y);
-            case 'r':
-                return getPossibleRookMoves(x, y);
-            case 'n':
+            case KNIGHT:
                 return getPossibleKnightMoves(x, y);
-            case 'b':
+            case BISHOP:
                 return getPossibleBishopMoves(x, y);
-            case 'q':
+            case ROOK:
+                return getPossibleRookMoves(x, y);
+            case QUEEN:
                 return getPossibleQueenMoves(x, y);
-            case 'k':
+            case KING:
                 return getPossibleKingMoves(x, y);
         }
         return null;
@@ -440,5 +444,4 @@ public class Board {
 
         return possibleMoves;
     }
-
 }

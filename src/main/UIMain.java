@@ -145,7 +145,7 @@ class UiMain extends JFrame {
             int endY = (end.charAt(2) - '0');
             char promotion = 'Q';
 
-            if (b.doesPromote(startX, startY, endX, endY)) {
+            if (b.doesPromote(startX, startY, endY)) {
                 promotion = getPromotionPiece();
             }
 

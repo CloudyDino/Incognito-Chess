@@ -2,8 +2,6 @@ package main;
 
 public class AsciiPrinter extends BoardPrinter {
 
-    private char NULLCHAR = '\0';
-
     AsciiPrinter(Board board) {
         super(board);
     }
@@ -25,7 +23,7 @@ public class AsciiPrinter extends BoardPrinter {
     }
 
     private char getPrintableChar(char c) {
-        if (c == NULLCHAR) {
+        if (c == 0) {
             return ' ';
         }
         return c;
