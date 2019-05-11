@@ -2,6 +2,8 @@ package main;
 
 public class AsciiPrinter extends BoardPrinter {
 
+    private char NULLCHAR = '\0';
+
     AsciiPrinter(Board board) {
         super(board);
     }
@@ -14,7 +16,7 @@ public class AsciiPrinter extends BoardPrinter {
         for (int y = arr[0].length - 1; y >= 0; y--) {
             StringBuilder sb = new StringBuilder();
             for (int x = 0; x < arr.length; x++) {
-                sb.append(arr[x][y]);
+                sb.append(getPrintableChar(arr[x][y]));
                 sb.append(" ");
 
             }
@@ -22,4 +24,10 @@ public class AsciiPrinter extends BoardPrinter {
         }
     }
 
+    private char getPrintableChar(char c) {
+        if (c == NULLCHAR) {
+            return ' ';
+        }
+        return c;
+    }
 }
