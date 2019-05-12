@@ -1,7 +1,20 @@
 package main;
 
 public enum Piece {
-    NOT_A_PIECE, PAWN,KNIGHT, BISHOP, ROOK, QUEEN, KING;
+    PAWN('P', 'p'),
+    KNIGHT('N', 'n'),
+    BISHOP('B', 'b'),
+    ROOK('R', 'r'),
+    QUEEN('Q', 'q'),
+    KING('K', 'k');
+
+    private char white;
+    private char black;
+
+    Piece(char white, char black) {
+        this.white = white;
+        this.black = black;
+    }
 
     public static Piece fromChar(char piece) {
         switch (Character.toLowerCase(piece)) {
@@ -18,6 +31,10 @@ public enum Piece {
             case 'k':
                 return KING;
         }
-        return NOT_A_PIECE;
+        throw new IllegalArgumentException(String.format("Can't convert %c into a Piece", piece));
+    }
+
+    public char toChar(boolean isWhite) {
+        return isWhite ? white : black;
     }
 }

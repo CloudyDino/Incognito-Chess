@@ -143,7 +143,7 @@ class UiMain extends JFrame {
             int startY = (start.charAt(2) - '0');
             int endX = (end.charAt(0) - '0');
             int endY = (end.charAt(2) - '0');
-            char promotion = 'Q';
+            Piece promotion = Piece.QUEEN;
 
             if (b.doesPromote(startX, startY, endY)) {
                 promotion = getPromotionPiece();
@@ -155,7 +155,7 @@ class UiMain extends JFrame {
             if (moveIsLegal) {
                 refreshBoard();
                 if (!localGame) {
-                    client.sendMove(sending, promotion);
+                    client.sendMove(sending, promotion.toChar(startColor));
                 }
             }
 
@@ -164,7 +164,7 @@ class UiMain extends JFrame {
     }
 
     static void receiveMove(int[] move, char promotion) {
-        b.move(move[0], move[1], move[2], move[3], promotion);
+        b.move(move[0], move[1], move[2], move[3], Piece.fromChar(promotion));
         refreshBoard();
     }
 
@@ -189,7 +189,7 @@ class UiMain extends JFrame {
         }
     }
 
-    private static char getPromotionPiece() {
+    private static Piece getPromotionPiece() {
         Object[] options = {"Queen", "Rook", "Bishop", "Knight"};
 
         int chosen = -1;
@@ -206,11 +206,11 @@ class UiMain extends JFrame {
         }
 
         switch (chosen) {
-            case 1: return 'R';
-            case 2: return 'B';
-            case 3: return 'K';
+            case 1: return Piece.ROOK;
+            case 2: return Piece.BISHOP;
+            case 3: return Piece.KNIGHT;
         }
-        return 'Q';
+        return Piece.QUEEN;
     }
 
     private static ImageIcon getIcon(char piece) {

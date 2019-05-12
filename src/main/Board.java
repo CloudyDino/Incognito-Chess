@@ -146,7 +146,7 @@ public class Board {
     }
 
     boolean move(int startX, int startY, int destX, int destY) {
-        return move(startX, startY, destX, destY, 'Q');
+        return move(startX, startY, destX, destY, Piece.QUEEN);
     }
 
     /**
@@ -156,7 +156,7 @@ public class Board {
      *
      * @return boolean if the move was valid and thus changed the board
      */
-    boolean move(int startX, int startY, int destX, int destY, char promoteTo) {
+    boolean move(int startX, int startY, int destX, int destY, Piece promoteTo) {
         // Check for validity
         if (!isValidMove(startX, startY, destX, destY)) {
             return false;
@@ -189,8 +189,7 @@ public class Board {
                 spaces[destX][startY] = 0;
             } else if (destY == 0 || destY == SIZE - 1) {
                 // pawn promotion
-                spaces[startX][startY] = (whiteTurn ? Character.toUpperCase(promoteTo)
-                        : Character.toLowerCase(promoteTo));
+                spaces[startX][startY] = promoteTo.toChar(whiteTurn);
             }
         }
 
@@ -296,7 +295,11 @@ public class Board {
 
     @NotNull
     private Set<Integer> getPossibleMoves(int x, int y) {
-        switch (Piece.fromChar(spaces[x][y])) {
+        char piece = spaces[x][y];
+        if (piece == 0) {
+            return new HashSet<>();
+        }
+        switch (Piece.fromChar(piece)) {
             case PAWN:
                 return getPossiblePawnMoves(x, y);
             case KNIGHT:
@@ -309,8 +312,9 @@ public class Board {
                 return getPossibleQueenMoves(x, y);
             case KING:
                 return getPossibleKingMoves(x, y);
+            default:
+                return new HashSet<>();
         }
-        return null;
     }
 
     private Set<Integer> getPossiblePawnMoves(int x, int y) {
