@@ -16,6 +16,13 @@ public enum Piece {
         this.black = black;
     }
 
+    public static boolean isWhite(char piece) {
+        if (!Character.isLetter(piece)) {
+            throw new IllegalArgumentException(String.format("Can't determine if %c is white or not", piece));
+        }
+        return Character.isUpperCase(piece);
+    }
+
     public static Piece fromChar(char piece) {
         switch (Character.toLowerCase(piece)) {
             case 'p':

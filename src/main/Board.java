@@ -127,7 +127,7 @@ public class Board {
                 }
 
                 Set<Integer> moves = getPossibleMoves(x, y);
-                if (moves != null) {
+                if (!moves.isEmpty()) {
                     if (Character.isUpperCase(spaces[x][y])) {
                         whiteAttack.addAll(moves);
                     } else {
@@ -272,10 +272,8 @@ public class Board {
                         king = squareToInteger(x, y);
                     }
 
-                    Set<Integer> moves;
-                    if (Character.isLetter(spaces[x][y])
-                            && whiteTurn != Character.isUpperCase(spaces[x][y])
-                            && (moves = getPossibleMoves(x, y)) != null) {
+                    Set<Integer> moves = getPossibleMoves(x, y);
+                    if (!moves.isEmpty() && whiteTurn != Piece.isWhite(spaces[x][y])) {
                         attacked.addAll(moves);
                     }
                 }
@@ -319,8 +317,9 @@ public class Board {
 
     private Set<Integer> getPossiblePawnMoves(int x, int y) {
         Set<Integer> possibleMoves = new HashSet<>();
-        int dy = (whiteTurn ? 1 : -1);
-        int startY = (whiteTurn ? 1 : 6);
+        boolean isWhite = Piece.isWhite(spaces[x][y]);
+        int dy = (isWhite ? 1 : -1);
+        int startY = (isWhite ? 1 : 6);
         int currY = y + dy;
         if (onBoard(x, currY) && spaces[x][currY] == 0) {
             possibleMoves.add(squareToInteger(x, currY));
@@ -332,7 +331,7 @@ public class Board {
         for (int dx = -1; dx <= 1; dx += 2) {
             int currX = x + dx;
             if (onBoard(currX, currY)
-                    && ((spaces[currX][currY] != 0 && whiteTurn != Character.isUpperCase(spaces[currX][currY]))
+                    && ((spaces[currX][currY] != 0 && isWhite != Piece.isWhite(spaces[currX][currY]))
                     || (spaces[currX][currY] == 0 && squareToInteger(currX, y) == enPassant))) {
                 possibleMoves.add(squareToInteger(currX, currY));
             }
