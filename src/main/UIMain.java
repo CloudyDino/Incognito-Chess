@@ -7,11 +7,12 @@ import java.awt.event.*;
 import java.awt.Image;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Set;
 import javax.swing.*;
 
 class UiMain extends JFrame {
 
-     static Board b;
+    static Board b;
     private static JButton[][] buttonArr;
     private static ArrayList<JButton> presses = new ArrayList<>();
     private static Server server;
@@ -56,7 +57,7 @@ class UiMain extends JFrame {
 
         if (localGame) {
             startColor = true;
-            startgame();
+            startGame();
         } else {
             startColorSeed = (new Random()).nextLong();
 
@@ -83,7 +84,7 @@ class UiMain extends JFrame {
         return true;
     }
 
-    static void startgame() {
+    static void startGame() {
         System.out.println("You are: " + (startColor ? "White" : "Black"));
 
         f = new UiMain();
@@ -184,13 +185,28 @@ class UiMain extends JFrame {
                 } else {
                     c = b.getBoard()[Board.SIZE - 1 - i][Board.SIZE - 1 - j];
                 }
-                ImageIcon icon = getIcon(c);
-                if (startColor) {
-                    buttonArr[i][j].setIcon(icon);
-                } else {
-                    buttonArr[Board.SIZE - 1 - i][Board.SIZE - 1 - j].setIcon(icon);
-                }
 
+                boolean colorToShow = localGame ? b.getTurn() : startColor;
+                Set<Integer> attacking = b.getAttacking(colorToShow);
+                if (attacking.contains(Board.squareToInteger(i, j)) || (c != 0 && Piece.isWhite(c) == colorToShow)) {
+                    ImageIcon icon = getIcon(c);
+                    if (startColor) {
+                        buttonArr[i][j].setIcon(icon);
+                        buttonArr[i][j].setBackground(getSquareColor(i, j));
+                    } else {
+                        buttonArr[Board.SIZE - 1 - i][Board.SIZE - 1 - j].setIcon(icon);
+                        buttonArr[Board.SIZE - 1 - i][Board.SIZE - 1 - j].setBackground(getSquareColor(Board.SIZE - 1 - i, Board.SIZE - 1 - j));
+                    }
+                } else {
+                    ImageIcon icon = getIcon((char) 0);
+                    if (startColor) {
+                        buttonArr[i][j].setIcon(icon);
+                        buttonArr[i][j].setBackground(Color.BLACK);
+                    } else {
+                        buttonArr[Board.SIZE - 1 - i][Board.SIZE - 1 - j].setIcon(icon);
+                        buttonArr[Board.SIZE - 1 - i][Board.SIZE - 1 - j].setBackground(Color.BLACK);
+                    }
+                }
             }
         }
     }

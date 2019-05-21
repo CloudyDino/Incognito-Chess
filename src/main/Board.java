@@ -64,21 +64,21 @@ public class Board {
         whiteTurn = !whiteTurn;
     }
 
-    private int squareToInteger(int x, int y) {
+    static int squareToInteger(int x, int y) {
         if (x < SIZE && y < SIZE) {
             return x * SIZE + y;
         }
         return -1;
     }
 
-    public int squareToInteger(int[] xy) {
+    static int squareToInteger(int[] xy) {
         if (xy.length >= 2 && xy[0] < SIZE && xy[1] < SIZE) {
             return xy[0] * SIZE + xy[1];
         }
         return -1;
     }
 
-    private int[] integerToSquare(int i) {
+    static int[] integerToSquare(int i) {
         return new int[]{i / SIZE, i % SIZE};
     }
 
@@ -126,7 +126,7 @@ public class Board {
                         break;
                 }
 
-                Set<Integer> moves = getPossibleMoves(x, y);
+                Set<Integer> moves = getAttackingSquares(x, y);
                 if (!moves.isEmpty()) {
                     if (Character.isUpperCase(spaces[x][y])) {
                         whiteAttack.addAll(moves);
@@ -139,6 +139,13 @@ public class Board {
 
         whiteInCheck = blackAttack.contains(whiteKing);
         blackInCheck = whiteAttack.contains(blackKing);
+    }
+
+    Set<Integer> getAttacking(boolean isWhite) {
+        if (isWhite) {
+            return whiteAttack;
+        }
+        return blackAttack;
     }
 
     boolean doesPromote(int startX, int startY, int destY) {
@@ -290,6 +297,34 @@ public class Board {
         return legalMoves;
     }
 
+    @NotNull
+    private Set<Integer> getAttackingSquares(int x, int y) {
+        char piece = spaces[x][y];
+        if (piece == 0) {
+            return new HashSet<>();
+        }
+        if (Piece.fromChar(piece) == Piece.PAWN) {
+            return getPawnAttackingSquares(x, y);
+        }
+        return getPossibleMoves(x, y);
+    }
+
+    private Set<Integer> getPawnAttackingSquares(int x, int y) {
+        Set<Integer> attacking = new HashSet<>();
+        boolean isWhite = Piece.isWhite(spaces[x][y]);
+        int dy = (isWhite ? 1 : -1);
+        int currY = y + dy;
+
+        for (int dx = -1; dx <= 1; dx += 2) {
+            int currX = x + dx;
+            if (onBoard(currX, currY)
+                    && (spaces[currX][currY] == 0 || isWhite != Piece.isWhite(spaces[currX][currY]))) {
+                attacking.add(squareToInteger(currX, currY));
+            }
+        }
+
+        return attacking;
+    }
 
     @NotNull
     private Set<Integer> getPossibleMoves(int x, int y) {

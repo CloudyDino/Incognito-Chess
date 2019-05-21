@@ -38,7 +38,7 @@ public class Server implements Runnable {
                 handshake = UiMain.handshake(l);
             }
 
-            UiMain.startgame();
+            UiMain.startGame();
 
             int line = 1;
 
