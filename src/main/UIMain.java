@@ -26,6 +26,9 @@ class UiMain extends JFrame {
     private static final int WINDOW_START_X = 200;
     private static final int WINDOW_START_Y = 50;
 
+    private static final Color DARK_COLOR = new Color(75, 115, 153);
+    private static final Color LIGHT_COLOR = new Color(234, 233, 210);
+
     private static final String IMAGES_FOLDER = "res";
     private static final String IMAGES_FILETYPE = "png";
 
@@ -119,17 +122,20 @@ class UiMain extends JFrame {
                     buttonArr[Board.SIZE - 1 - j][Board.SIZE - 1 - i] = square;
                 }
 
-                if (i % 2 == j % 2) {
-                    square.setBackground(new Color(75, 115, 153));
-                } else {
-                    square.setBackground(new Color(234, 233, 210));
-                }
+                square.setBackground(getSquareColor(i, j));
                 chessPanel.add(square);
             }
         }
 
         contentPane.add(chessPanel);
         f.setVisible(true);
+    }
+
+    private static Color getSquareColor(int row, int col) {
+        if (row % 2 == col % 2) {
+            return DARK_COLOR;
+        }
+        return LIGHT_COLOR;
     }
 
     static void takeTurn() {
