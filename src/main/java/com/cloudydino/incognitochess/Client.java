@@ -11,7 +11,7 @@ public class Client implements Runnable {
     private String address;
     private int port;
 
-    public Client(String address, int port) {
+    Client(String address, int port) {
         this.address = address;
         this.port = port;
     }

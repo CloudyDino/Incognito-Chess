@@ -1,11 +1,9 @@
 package com.cloudydino.incognitochess;
 
-import com.sun.istack.internal.NotNull;
-
 import java.util.HashSet;
 import java.util.Set;
 
-public class Board {
+class Board {
 
     static final int SIZE = 8;
 
@@ -297,7 +295,6 @@ public class Board {
         return legalMoves;
     }
 
-    @NotNull
     private Set<Integer> getAttackingSquares(int x, int y) {
         char piece = spaces[x][y];
         if (piece == 0) {
@@ -326,7 +323,6 @@ public class Board {
         return attacking;
     }
 
-    @NotNull
     private Set<Integer> getPossibleMoves(int x, int y) {
         char piece = spaces[x][y];
         if (piece == 0) {

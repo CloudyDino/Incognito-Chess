@@ -11,7 +11,7 @@ public class Server implements Runnable {
     private int port;
 
     // constructor with port
-    public Server(int port) {
+    Server(int port) {
         this.port = port;
     }
 
