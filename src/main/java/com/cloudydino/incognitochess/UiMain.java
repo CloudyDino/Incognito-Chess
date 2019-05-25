@@ -1,4 +1,4 @@
-package main;
+package com.cloudydino.incognitochess;
 
 import java.awt.Color;
 import java.awt.Container;

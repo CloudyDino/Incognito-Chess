@@ -1,4 +1,4 @@
-package main;
+package com.cloudydino.incognitochess;
 
 import java.net.*;
 import java.io.*;

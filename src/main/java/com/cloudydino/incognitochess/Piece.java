@@ -1,4 +1,4 @@
-package main;
+package com.cloudydino.incognitochess;
 
 public enum Piece {
     PAWN('P', 'p'),

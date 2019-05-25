@@ -1,4 +1,4 @@
-package main;
+package com.cloudydino.incognitochess;
 
 import com.sun.istack.internal.NotNull;
 

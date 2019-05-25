@@ -1,4 +1,4 @@
-package main;
+package com.cloudydino.incognitochess;
 
 import java.net.*;
 import java.io.*;
@@ -19,11 +19,11 @@ public class Server implements Runnable {
         // starts server and waits for a connection
         try {
             server = new ServerSocket(port);
-            System.out.println("main.Server started");
+            System.out.println("Server started");
             System.out.println("Waiting for a client ...");
 
             socket = server.accept();
-            System.out.println("main.Client accepted");
+            System.out.println("Client accepted");
 
             // takes input from the client socket
             in = new DataInputStream(

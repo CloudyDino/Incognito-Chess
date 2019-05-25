@@ -1,4 +1,4 @@
-package main;
+package com.cloudydino.incognitochess;
 
 public class AsciiPrinter extends BoardPrinter {
 
